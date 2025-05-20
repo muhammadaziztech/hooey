@@ -1,0 +1,21 @@
+{% include 'yotpo-subs-product-page-widget' %}
+{% comment %}
+{%- if settings.collaboration_text -%}
+  {%- section 'product-collab' -%}
+{%- endif -%}
+{% endcomment%}
+
+{% section 'product-template' %}
+{% comment %}
+{%- if product.type == 'Hats' -%}
+  {%- section 'product-features' -%}
+{%- endif -%}
+
+{%- if product.type == 'Hats' -%}
+  {%- section 'product-hat-brand' -%}
+{%- endif -%}
+{% endcomment%}
+{% section 'product-recommendations' %}
+{% section 'recently-viewed-products' %}
+{% render 'product_infox' %}
+{% include 'cross-sell' %}

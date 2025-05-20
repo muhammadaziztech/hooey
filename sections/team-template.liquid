@@ -1,0 +1,230 @@
+<div class="team" data-section-id="{{ section.id }}" data-section-type="team" data-module="team-template">
+  {%- comment -%}
+  Team Hero
+  {%- endcomment -%}
+  {%- assign hero_image = section.settings.hero_image | default: nil -%}
+  {%- assign hero_title = section.settings.hero_title | default: nil -%}
+  {%- assign hero_subtitle = section.settings.hero_subtitle | default: nil -%}
+  {%- assign hero_description = section.settings.hero_description | default: nil -%}
+  <section class="team-hero">
+    <div class="team-hero__image-wrapper">
+      {%- if hero_image -%}
+        {%- assign hero_image_src = hero_image | img_url: 'master' -%}
+        {%- include 'image',
+          class: 'team-hero__image',
+          src: hero_image_src,
+          object_fit: 'cover',
+          loader: false
+        -%}
+        {%- assign hero_image_src = nil -%}
+      {%- endif -%}
+    </div>
+    <div class="team-hero__content">
+      {%- if hero_subtitle -%}
+        <div class="label team-hero__subtitle">
+          {{- hero_subtitle -}}
+        </div>
+      {%- endif -%}
+      {%- if hero_title -%}
+        <h1 class="h2 team-hero__title">
+          {{- hero_title -}}
+        </h1>
+      {%- endif -%}
+      {%- if hero_description -%}
+        <div class="team-hero__description">
+          {{- hero_description -}}
+        </div>
+      {%- endif -%}
+    </div>
+  </section>
+  {%- assign hero_image = nil -%}
+  {%- assign hero_title = nil -%}
+  {%- assign hero_subtitle = nil -%}
+  {%- assign hero_description = nil -%}
+
+  {%- comment -%}
+  Our Team
+  {%- endcomment -%}
+  {%- assign our_team_title = section.settings.our_team_title | default: '' -%}
+  {%- assign our_team_subtitle = section.settings.our_team_subtitle | default: '' -%}
+  {%- assign awards_title = section.settings.awards_title | default: 'Awards & Recognition' -%}
+  <section class="team-list">
+    <div class="team-list__header">
+      {%- if our_team_title != blank -%}
+        <h2 class="h3 team-list__title">
+          {{- our_team_title -}}
+        </h2>
+      {%- endif -%}
+
+      {%- if our_team_subtitle != blank -%}
+        <div class="team-list__subtitle">
+          {{- our_team_subtitle -}}
+        </div>
+      {%- endif -%}
+
+      <div class="team-list__nav">
+        {%- for team in blogs.team.articles -%}
+          {%- assign name = team.title -%}
+          {%- assign avatar_image = team.metafields.accentuate.avatar_image -%}
+
+          <div class="team-list__nav-item">
+            <a href="#{{- name | handleize -}}" class="team-list__nav-link">
+              <div class="team-list__nav-avatar-wrapper">
+                {%- if avatar_image -%}
+                  {%- include 'image',
+                    class: 'team-list__nav-avatar'
+                    src: avatar_image,
+                    object_fit: 'cover',
+                    seo: '',
+                    loader: false
+                  -%}
+                {%- endif -%}
+              </div>
+              <div class="team-list__nav-list-name label">{{- name -}}</div>
+            </a>
+          </div>
+
+          {%- assign name = nil -%}
+          {%- assign avatar = nil -%}
+        {%- endfor -%}
+      </div>
+    </div>
+
+    <div class="team-list__wrapper js-parallax">
+      {%- for team in blogs.team.articles -%}
+        {%- assign name = team.title -%}
+        {%- assign name_size = name | size -%}
+        {%- assign avatar_image = team.metafields.accentuate.avatar_image -%}
+        {%- assign hero_image = team.metafields.accentuate.hero_image -%}
+        {%- assign summary = team.excerpt -%}
+        {%- assign num_awards = team.metafields.accentuate.award_year | size -%}
+
+        <div class="team-list__item">
+          <div class="team-list__item-image-wrapper">
+            <a class="anchor" name="{{- name | handleize -}}"></a>
+            {%- if hero_image -%}
+            {%- include 'image',
+              class: 'team-list__item-image'
+              src: hero_image,
+              object_fit: 'cover',
+              seo: '',
+              loader: false
+            -%}
+            {%- endif -%}
+          </div>
+          <div class="team-list__item-content">
+            <div class="team-list__item-avatar-wrapper">
+              {%- if avatar_image -%}
+                {%- include 'image',
+                  class: 'team-list__item-avatar'
+                  src: avatar_image,
+                  object_fit: 'cover',
+                  seo: '',
+                  loader: false
+                -%}
+              {%- endif -%}
+            </div>
+            <div class="team-list__item-name{% if name_size > 12 %} team-list__item-name--long{% endif %} h3">
+              {{- name -}}
+            </div>
+            <div class="team-list__item-summary">
+              {{- summary -}}
+            </div>
+            <div class="team-list__item-awards">
+              <div class="team-list__item-awards-icon">
+                {%- include 'icon' with 'award' -%}
+              </div>
+              {%- assign enable_awards_title = section.settings.enable_awards_title -%}
+              {%- if enable_awards_title -%}
+                <div class="team-list__item-awards-text">{{- num_awards -}}{{- awards_title -}}</div>
+              {%- endif -%}
+            </div>
+            {%- assign enable_bio_cta = section.settings.enable_bio_cta -%}
+            {%- if enable_bio_cta -%}
+              <a href="{{- team.url -}}" class="button team-list__item-button">See Bio</a>
+            {%- endif -%}
+            {%- assign enable_bio_cta = nil -%}
+          </div>
+        </div>
+
+        {%- assign name = nil -%}
+        {%- assign avatar_image = nil -%}
+        {%- assign hero_image = nil -%}
+        {%- assign summary = nil -%}
+        {%- assign num_awards = nil -%}
+      {%- endfor -%}
+    </div>
+  </section>
+  {%- assign our_team_title = nil -%}
+  {%- assign our_team_subtitle = nil -%}
+</div>
+
+<style>
+  .team-list__item-image-wrapper::after {
+    background-image: url({{ 'separator-horizontal.png' | asset_url }});
+  }
+
+  @media (min-width: 1008px) {
+    .team-list__item-image-wrapper::after {
+      background-image: url({{ 'separator-vertical.png' | asset_url }});
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Team Page",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Hero Image"
+    },
+    {
+      "type": "text",
+      "id": "hero_title",
+      "label": "Hero Title"
+    },
+    {
+      "type": "text",
+      "id": "hero_subtitle",
+      "label": "Hero Subtitle"
+    },
+    {
+      "type": "text",
+      "id": "hero_description",
+      "label": "Hero Description"
+    },
+    {
+      "type": "text",
+      "id": "our_team_title",
+      "label": "Our Team Title",
+      "default": "Our Team"
+    },
+    {
+      "type": "text",
+      "id": "our_team_subtitle",
+      "label": "Our Team Subtitle",
+      "default": "Click on the headshot to learn more."
+    },
+    {
+      "type": "text",
+      "id": "awards_title",
+      "label": "Awards Title",
+      "default": "Awards & Recognition"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_awards_title",
+      "label": "Enable See Awards Title",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_bio_cta",
+      "label": "Enable See Bio CTA Button",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

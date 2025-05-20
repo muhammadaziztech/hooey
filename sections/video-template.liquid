@@ -1,0 +1,129 @@
+{%- assign tv_base_url = '/pages/hooeytv/' -%}
+{%- assign video_url = shop.url | append: article.url -%}
+{%- assign category_title = nil -%}
+{%- assign related_videos_limit = 7 -%}
+{%- assign related_videos = article.handle | split: ',' -%}
+
+<div class="video-template" data-section-id="{{ section.id }}" data-section-type="video-template" data-module="video-template">
+  {%- if article.image -%}
+    {%- assign image_src = article.image | img_url: 'master' -%}
+    {%- include 'image',
+      class: 'video__backdrop-image',
+      src: image_src,
+      object_fit: 'cover',
+      loader: false
+    -%}
+  {%- else -%}
+    <div class="video__backdrop-image"></div>
+  {%- endif -%}
+  <a href="{{- tv_base_url -}}" class="video__back-link label">
+    {%- include 'icon' with 'arrow-down' -%}
+    {{- 'tv.details.back' | t -}}
+  </a>
+  <div class="video__wrapper">
+    {%- include 'video-player', class: 'video__player', video_id: article.metafields.accentuate.video_url -%}
+    <div class="video__body">
+      <div class="video-category">
+        {%- for tag in article.tags -%}
+          {%- if tag contains 'category:' -%}
+            {%- assign category_title = tag | remove: 'category:' -%}
+            {%- assign category = tag | remove: 'category:' -%}
+            {%- assign category_slug = tag | remove: 'category:' | handleize -%}
+            <a href="{{- tv_base_url -}}{{- category_slug -}}" class="video__category-link label separator-v">{{- category -}}</a>
+            {%- assign category = nil -%}
+            {%- assign category_slug = nil -%}
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+      <h1 class="h2 video__title">
+        {{- article.title -}}
+      </h1>
+      <div class="video__content">
+          {{- article.content -}}
+      </div>
+      <div class="video__share label">
+        <div class="video__share-title">{{- 'tv.share' | t -}}</div>
+        <ul class="video__share-list">
+          <li class="video__share-item">
+            <a href="https://www.facebook.com/sharer/sharer.php?u={{- video_url -}}" class="video__share-link" target="_blank" rel="noopener" aria-label="{{- 'social.facebook' | t -}}">
+              {%- include 'icon' with 'facebook' -%}
+            </a>
+          </li>
+          <li class="video__share-item">
+            <a href="https://twitter.com/intent/tweet?url={{- video_url -}}" class="video__share-link" target="_blank" rel="noopener" aria-label="{{- 'social.twitter' | t -}}">
+              {%- include 'icon' with 'twitter' -%}
+            </a>
+          </li>
+          <li class="video__share-item">
+            <a href="https://pinterest.com/pin/create/button/?url={{- video_url -}}" class="video__share-link" target="_blank" rel="noopener" aria-label="{{- 'social.pinterest' | t -}}">
+              {%- include 'icon' with 'pinterest' -%}
+            </a>
+          </li>
+          <li class="video__share-item">
+            <a href="mailto:?body={{- video_url -}}" class="video__share-link" aria-label="{{- 'social.email' | t -}}">
+              {%- include 'icon' with 'envelope' -%}
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="video__related-videos is-compact">
+      <h2 class="video__related-videos-title label">
+        {{ 'tv.details.playlist' | t }}
+        <span class="video__related-videos-subtitle">{{ 'tv.details.up_next' | t }} <span class="video__related-video-category">{{ 'tv.details.in' | t }} {{ category_title }}</span></span>
+      </h2>
+      <ul class="video__related-videos-list">
+        {%- for tag in article.tags -%}
+          {%- if tag contains 'category:' -%}
+            {%- for video in blogs.tv.articles -%}
+              {%- unless related_videos contains video.handle -%}
+                {%- if video.tags contains tag -%}
+                  {%- include 'related-video', item: video -%}
+                  {%- assign video_handle = video.handle | split: ',' -%}
+                  {%- assign related_videos = related_videos | concat: video_handle -%}
+                  {%- assign video_handle = nil -%}
+                  {%- assign related_videos_limit = related_videos_limit | minus: 1 -%}
+                {%- endif -%}
+              {%- endunless -%}
+            {%- endfor -%}
+            {%- if related_videos_limit == 0 -%}
+              {% break %}
+            {%- endif -%}
+          {%- endif -%}
+        {%- endfor -%}
+
+        {%- if related_videos_limit > 0 -%}
+          {%- for tag in article.tags -%}
+            {%- unless tag contains 'category:' -%}
+              {%- for video in blogs.tv.articles -%}
+                {%- unless related_videos contains video.handle -%}
+                  {%- if video.tags contains tag -%}
+                    {%- include 'related-video', item: video -%}
+                    {%- assign video_handle = video.handle | split: ',' -%}
+                    {%- assign related_videos = related_videos | concat: video_handle -%}
+                    {%- assign video_handle = nil -%}
+                    {%- assign related_videos_limit = related_videos_limit | minus: 1 -%}
+                  {%- endif -%}
+                {%- endunless -%}
+              {%- endfor -%}
+              {%- if related_videos_limit == 0 -%}
+                {% break %}
+              {%- endif -%}
+            {%- endunless -%}
+          {%- endfor -%}
+        {%- endif -%}
+      </ul>
+      {%- if related_videos_limit < 2 -%}
+        <button type="button" class="button button--full video__related-videos-more js-related-videos-more">
+          {{- 'tv.details.load_more' | t -}}
+        </button>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{%- assign tv_base_url = nil -%}
+{%- assign video_url = nil -%}
+{%- assign category_title = nil -%}
+{%- assign related_videos_limit = nil -%}
+{%- assign related_videos = nil -%}

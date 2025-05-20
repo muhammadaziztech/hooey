@@ -1,0 +1,11 @@
+{%- assign mod_icon = mod_icon | default: nil -%}
+{%- assign mod_content = mod_content | default: '' -%}
+
+<div class="tooltip">
+  {%- if mod_icon -%}
+    {{ mod_icon }} test
+  {%- else -%}
+    {%- render 'icon', icon: 'question-mark' -%}
+  {%- endif -%}
+  <span class="tooltip__text">{{- mod_content -}}</span>
+</div>

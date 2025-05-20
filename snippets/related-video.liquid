@@ -1,0 +1,26 @@
+{%- assign item = item | default: nil -%}
+
+<li class="related_video">
+  <a href="{{- item.url -}}" class="related-video__link">
+    <div class="related-video__image-wrapper">
+      {%- if item.image -%}
+        {%- assign image_src = item.image | img_url: 'master' -%}
+        {%- include 'image',
+          class: 'related-video__image',
+          src: image_src,
+          object_fit: 'cover',
+          loader: false
+        -%}
+        {%- assign image_src = nil -%}
+      {%- endif -%}
+    </div>
+    <h3 class="related-video__title label">{{- item.title -}}</h3>
+    <div class="related-video__content">
+      <div class="related-video__content-inner">
+        {{- item.excerpt_or_content -}}
+      </div>
+    </div>
+  </a>
+</li>
+
+{%- assign item = nil -%}

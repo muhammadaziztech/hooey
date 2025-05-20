@@ -1,0 +1,43 @@
+{%- assign class = class | default: nil -%}
+{%- assign src = src | default: nil -%}
+{%- assign retina = retina | default: nil -%}
+{%- assign src_media = src_media | default: false -%}
+{%- assign srcset = srcset | default: nil -%}
+{%- assign seo = seo | default: nil -%}
+{%- assign object_fit = object_fit | default: 'cover' -%}
+{%- assign loader = loader | default: true -%}
+{%- assign icon_adj = icon_adj | default: false -%}
+
+{%- capture css -%}
+  img img--vanilla fit-{{- object_fit }} {{ class }}{% if loader %} bg-slate{% endif %}{% if icon_adj %} less-than-three{% endif %}
+{%- endcapture -%}
+
+{%- capture attributes -%}
+  {%- if seo -%}title="{{- seo | strip -}}" alt="{{- seo | strip -}}"{%- endif -%}
+{%- endcapture -%}
+
+<div class="{{- css | strip -}}" data-module="image">
+  <noscript>
+    <img loading="lazy" class="img__el is-fallback" src="{{- src | strip -}}" {{- attributes | strip -}}>
+  </noscript>
+  {%- if loader -%}
+    <i class="img__loader icon--xxl">
+      {%- include 'icon' with 'icon-placeholder' -%}
+    </i>
+  {%- endif -%}
+  {%- if src_media -%}
+    {{- src_media -}}
+  {%- endif -%}
+  <img loading="lazy" class="img__el" data-js-class="img__el" data-normal="{{- src | strip -}}" {%- if retina -%}data-retina="{{- retina | strip -}}"{%- endif -%} {%- if srcset -%}data-srcset="{{- srcset | strip -}}"{%- endif -%} {{- attributes | strip -}}>
+</div>
+
+{%- assign class = nil -%}
+{%- assign src = nil -%}
+{%- assign retina = nil -%}
+{%- assign src_media = nil -%}
+{%- assign srcset = nil -%}
+{%- assign seo = nil -%}
+{%- assign object_fit = nil -%}
+{%- assign loader = loader | default: true -%}
+{%- assign css = nil -%}
+{%- assign attributes = nil -%}

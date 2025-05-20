@@ -1,0 +1,132 @@
+{%- assign mod_features = '' -%}
+
+{%- for mod_tag in mod_product.tags -%}
+  {%- assign mod_parsed_tag = mod_tag | split: ':' -%}
+  {%- assign mod_feature = mod_parsed_tag | first -%}
+  {%- assign mod_feature_handle = mod_parsed_tag | last -%}
+
+  {%- if mod_feature == 'feature' -%}
+    {%- assign mod_features = mod_features | append: ',' | append: mod_feature_handle -%}
+  {%- endif -%}
+{%- endfor -%}
+
+{%- assign mod_features = mod_features | remove_first: ',' | split: ',' -%}
+
+{%- if mod_features.size > 0 -%}
+ {% if mod_features.size < 3 %}
+     {% assign iconadjust = true %}
+<style>.img__el{position:unset;}.product-form-features__item-icon{margin-bottom:30px;}</style>
+ {% endif %}
+  <div class="product-form-features">
+    <div class="product-form-features__heading-wrapper">
+      <h2 class="product-form-features__heading">{{- 'product.features.title' | t -}}</h2>
+      {% comment %}
+      <a href="#features" class="product-form-features__heading-link">{{- 'product.features.more_info' | t -}}</a>
+      {% endcomment %}
+    </div>
+    <div class="product-form-features__list product-form-features__list--{{- mod_features | size -}}">
+      {%- for mod_block in mod_blocks -%}
+        {%- if mod_features contains mod_block.settings.handle -%}
+      	<a href="javascript:openProdModal('{{mod_block.settings.handle}}_modal')" class="{{ mod_block.settings.handle }}">
+          <div class="product-form-features__item">
+            <div class="product-form-features__item-icon">
+              {%- if mod_block.settings.icon -%}
+                {%- assign mod_image_src = mod_block.settings.icon | img_url: 'master' -%}
+
+                {%- render 'image',
+                  class: "product-form-features__item-icon-image",
+                  src: mod_image_src,
+                  object_fit: 'none',
+                  loader: false,
+                  icon_adj: iconadjust
+                -%}
+
+                {%- assign mod_image_src = nil -%}
+              {%- endif -%}
+            </div>
+
+            <div class="product-form-features__item-title">
+              {%- if mod_block.settings.title -%}
+                {{ mod_block.settings.title }}
+              {%- endif -%}
+			  {% comment %}
+              {%- if mod_block.settings.description -%}
+                {%- render 'tooltip', mod_content: mod_block.settings.description -%}
+              {%- endif -%}
+              {% endcomment %}
+            </div>
+          </div>
+      	</a>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  </div>
+  {%- for mod_block in mod_blocks -%}
+	{%- if mod_features contains mod_block.settings.handle -%}
+		{% if mod_block.settings.handle == 'odessa-fabric' %}
+          {% assign feature_modal_icon = 'odessa_fabric_2x.png'| asset_url %}
+          {% assign feature_bg_img = 'odessa-bw_bg.jpg'| asset_url %}
+          {% assign  ff_description = 'Our Odessa Fabric is an innovative, sleek blend that resists those nasty sweat rings and even repels water! Explore our Odessa Hats' %}
+          {% assign ff_link = "https://getyourhooey.com/collections/hats?pf_t_feature=Odessa+Fabric" %}
+		{% elsif mod_block.settings.handle == 'flex-mesh' %}
+          {% assign feature_modal_icon = 'flex_mesh_2x.png' | asset_url %}
+          {% assign ff_description = 'Our Flex Mesh provides both the comfort of a Flexfit and the breathability of mesh' %}
+		  {% assign feature_bg_img = 'flex-mesh_bw_bg.jpg'| asset_url %}
+          {% assign ff_link = "https://getyourhooey.com/collections/hats?pf_t_feature=Flexfit" %}
+        {% elsif mod_block.settings.handle == 'one-fit' %}
+          {% assign feature_modal_icon = 'one-fit-logo-3.png'| asset_url %}
+          {% assign feature_bg_img = 'one-fit-bg.jpg'| asset_url %}
+          {% assign  ff_description = 'Introducing our most comfortable hat to date. Uni-fits Stretchable materials combined with adjustability is the perfect fit for everyone' %}
+          {% assign ff_link = "https://getyourhooey.com/collections/hats?pf_t_feature=One+Fit" %}
+        {% elsif mod_block.settings.handle == 'unifit' %}
+          {% assign feature_modal_icon = 'UNI-FIT-LOGO.png'| asset_url %}
+          {% assign feature_bg_img = 'one-fit-bg.jpg'| asset_url %}
+          {% assign  ff_description = 'Introducing our most comfortable hat to date. Uni-fits Stretchable materials combined with adjustability is the perfect fit for everyone.' %}
+          {% assign ff_link = "https://getyourhooey.com/collections/hats?pf_t_feature=UNI-FIT" %}  
+        {% elsif mod_block.settings.handle == 'reversible' %}
+          {% assign feature_modal_icon = 'reversible-icon.png'| asset_url %}
+          {% assign feature_bg_img = 'one-fit-bg.jpg'| asset_url %}
+          {% assign  ff_description = 'Flip Inside out for different looks.' %}
+          {% assign ff_link = "https://getyourhooey.com/collections/ladies-swim?pf_t_feature=reversible" %}
+		{% elsif mod_block.settings.handle == 'mid-profile-fit' %}
+          {%assign feature_modal_icon = 'mid_profile_fit_2x.png' | asset_url %}
+          {% assign ff_description = 'We understand that the fit of a hat is a very personal preference. Hooey designs encompass a full range of crown-height options.' %}
+		  {% assign feature_bg_img = 'hat_profile.jpg'| asset_url %}
+		{% elsif mod_block.settings.handle == 'low-profile-fit' %}
+          {%assign feature_modal_icon = 'mid_profile_fit_2x.png' | asset_url %}
+          {% assign ff_description = 'We understand that the fit of a hat is a very personal preference. Hooey designs encompass a full range of crown-height options.' %}
+		  {% assign feature_bg_img = 'hat_profile.jpg'| asset_url %}
+        {% elsif mod_block.settings.handle == 'water-resistant' %}
+          {%assign feature_modal_icon = 'Water_Resistant_White.png' | asset_url %}
+          {% assign ff_description = 'Water resistant material for sustained durability.' %}
+		  {% assign feature_bg_img = 'one-fit-bg.jpg'| asset_url %}
+          {% assign ff_link = "https://getyourhooey.com/collections/shorts-1?pf_t_feature=Water+Resistant" %}
+		{% elsif mod_block.settings.handle == 'high-profile-fit' %}
+          {%assign feature_modal_icon = 'mid_profile_fit_2x.png' | asset_url %}
+          {% assign ff_description = 'We understand that the fit of a hat is a very personal preference. Hooey designs encompass a full range of crown-height options.' %}
+		  {% assign feature_bg_img = 'hat_profile.jpg'| asset_url %}
+		{% endif %}
+	<section id="{{ mod_block.settings.handle }}_modal" class="pr_modal_wrapper">
+      <div class="modal_content">
+        <div class="ff_modal_content">
+          <div id="ff_close" class="modal_close">
+            <button onclick="closeProdModal('{{mod_block.settings.handle}}_modal')" class="m_close"><div class="button-close">CLOSE</div><div class="button-x">X</div></button>
+          </div>
+          {% if mod_block.settings.handle == 'mid-profile-fit' or mod_block.settings.handle == 'low-profile-fit' or mod_block.settings.handle == 'high-profile-fit' %}
+          <img loading="lazy" src="{{feature_bg_img}}" />
+          {% else %}
+          <div class="ff_bg_img inner_content" style="background-image:url('{{ feature_bg_img }}');">
+            <img loading="lazy" src="{{ feature_modal_icon }}" />
+            <h2>{{ mod_block.settings.title }}</h2>
+            <div class="ff_description">
+              <p>{{ ff_description }}</p>
+              	<a href="{{ ff_link }}"><button>VIEW MORE {{mod_block.settings.title}} </button></a>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+  	</section>
+	{%- endif -%}
+  {%- endfor -%}
+{%- endif -%}

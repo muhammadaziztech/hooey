@@ -1,0 +1,100 @@
+{%- comment -%}
+Hard-coded tv page URL
+{%- endcomment -%}
+{%- assign excluded_video = excluded_video | nil -%}
+{%- assign limit = 6 -%}
+{%- assign tv_url = '/pages/hooeytv' -%}
+{%- assign tv_base_url = tv_url | append: '/' -%}
+{%- assign request_category = request.path | remove: tv_base_url -%}
+{%- assign category_tag = request_category | prepend: 'category-' -%}
+{%- if request_category == tv_url -%}
+  {%- assign request_category = '' -%}
+{%- endif -%}
+{%- assign current_page = content_for_header | split: '"pageurl":"' | last | split: '"' | first | replace:'\/', '/' | replace:'%20', ' ' | replace:'\u0026', '&' | split: tv_url | last | split: '?page=' | last | plus: 0 -%}
+{%- if current_page < 1 -%}
+  {%- assign current_page = 1 -%}
+{%- endif -%}
+{%- assign start = current_page | minus: 1 | times: limit -%}
+{%- assign end = current_page | times: limit -%}
+{%- assign start_newsletter = start | plus: 3 -%}
+{%- assign count = 0 -%}
+
+<div class="tv-categories">
+  <h2 class="h2 tv-categories__title">
+    {{- 'tv.the_latest' | t -}}
+  </h2>
+  <div class="tv-categories__list-wrapper">
+    <ul class="tv-categories__list">
+      <li class="tv-categories__item">
+        <a href="{{- tv_base_url -}}" class="tv-categories__link label{% if request_category == '' %} is-active{% endif %}">{{- 'tv.all' | t -}}</a>
+      </li>
+      {%- for tag in blogs.tv.all_tags -%}
+        {%- if tag contains 'category:' -%}
+          {%- assign category = tag | remove: 'category:' -%}
+          {%- assign category_slug = tag | remove: 'category:' | handleize -%}
+          <li class="tv-categories__item">
+            <a href="{{- tv_base_url -}}{{- category_slug -}}" class="tv-categories__link label{% if request_category == category_slug %} is-active{% endif %}">{{- category -}}</a>
+          </li>
+          {%- assign category = nil -%}
+          {%- assign category_slug = nil -%}
+        {%- endif -%}
+      {%- endfor -%}
+    </ul>
+  </div>
+</div>
+<div class="tv-list js-tv-list" data-module="tv-list">
+  {%- for article in blogs.tv.articles -%}
+    {%- if article.handle != excluded_video -%}
+      {%- for tag in article.tags -%}
+        {%- assign tag_handle = tag | handle -%}
+        {%- if request_category == '' or tag_handle == category_tag -%}
+          {%- assign count = count | plus: 1 -%}
+          {%- if count > start and count <= end -%}
+            {%- include 'tv-item',
+              item: article,
+              class: 'tv-list__item',
+              is_show_image: true,
+              is_show_learn_more: true
+            -%}
+            {%- if count == start_newsletter -%}
+              {%- include 'tv-newsletter' -%}
+            {%- endif -%}
+            {% break %}
+          {%- endif -%}
+          {%- if request_category == '' -%}
+            {% break %}
+          {%- endif -%}
+        {%- endif -%}
+        {%- assign tag_handle = nil -%}
+      {%- endfor -%}
+    {%- endif -%}
+    {%- if count > end -%}
+      {% break %}
+    {%- endif -%}
+  {%- endfor -%}
+
+  {%- if count < start_newsletter -%}
+    {%- include 'tv-newsletter' -%}
+  {%- endif -%}
+</div>
+
+{%- if count > end -%}
+  {%- assign next_page = current_page | plus: 1 -%}
+  {%- assign more_url = tv_base_url | append: '?page=' | append: next_page -%}
+  <div class="tv-list__more-button-wrapper">
+    <a href="{{- more_url -}}" class="tv-list__more-button button js-load-more">{{- 'tv.load_more' | t -}}</a>
+  </div>
+  {%- assign next_page = nil -%}
+  {%- assign more_url = nil -%}
+{%- endif -%}
+
+{%- assign excluded_video = nil -%}
+{%- assign limit = nil -%}
+{%- assign tv_url = nil -%}
+{%- assign tv_base_url = nil -%}
+{%- assign request_category = nil -%}
+{%- assign category_tag = nil -%}
+{%- assign current_page = nil -%}
+{%- assign start = nil -%}
+{%- assign end = nil -%}
+{%- assign count = nil -%}

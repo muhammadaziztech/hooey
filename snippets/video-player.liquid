@@ -1,0 +1,9 @@
+{%- assign video_id = video_id | default: nil -%}
+{%- assign class = class | nil -%}
+{%- assign autoplay = autoplay | nil -%}
+
+<div class="video-player{% if class %} {{ class }}{% endif %}" data-video-id="{{- video_id -}}"{% if autoplay %} data-autoplay="{{- autoplay -}}"{% endif %} data-module="video-player"></div>
+
+{%- assign video_id = nil -%}
+{%- assign class = nil -%}
+{%- assign autoplay = nil -%}

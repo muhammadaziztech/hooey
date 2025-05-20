@@ -1,0 +1,27 @@
+<div class="tv-newsletter js-tv-newsletter">
+  <h3 class="tv-newsletter__title h3">
+    {%- include 'icon' with 'rope' -%}
+    {{- 'tv.newsletter.title' | t -}}
+  </h3>
+  {%- form 'customer', class: 'tv-newsletter__form' -%}
+    <div class="tv-newsletter__form-inner">
+      <input type="hidden" name="contact[tags]" value="newsletter">
+      <input type="email" name="contact[email]" class="tv-newsletter__input Form__Input" aria-label="{{ 'home_page.newsletter.input' | t }}" placeholder="{{ 'home_page.newsletter.input' | t }}" required>
+      <button type="submit" class="tv-newsletter__button button button--primary">{{- 'tv.newsletter.submit' | t -}}</button>
+    </div>
+  {%- endform -%}
+</div>
+
+<style>
+  .tv-newsletter::before,
+  .tv-newsletter::after {
+    background-image: url({{ 'separator-horizontal.png' | asset_url }});
+  }
+
+  @media (min-width: 768px) {
+    .tv-newsletter::before,
+    .tv-newsletter::after {
+      background-image: url({{ 'separator-vertical.png' | asset_url }});
+    }
+  }
+</style>

@@ -1,0 +1,7 @@
+{%- assign video = video | default: nil -%}
+
+{%- if video.metafields.accentuate.video_url -%}
+  <a class="tv-play-button" href="{{- video.url -}}" aria-label="{{- 'tv.play' | t -}}" data-video-handle="{{- video.handle -}}" data-module="tv-play-button">
+    {%- include 'icon-image', icon: 'play' -%}
+  </a>
+{%- endif -%}

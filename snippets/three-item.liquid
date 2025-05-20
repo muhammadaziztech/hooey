@@ -1,0 +1,46 @@
+{%- assign icon_1 = icon_1 | default: nil -%}
+{%- assign icon_2 = icon_2 | default: nil -%}
+{%- assign icon_3 = icon_3 | default: nil -%}
+{%- assign text_1 = text_1 | default: nil -%}
+{%- assign text_2 = text_2 | default: nil -%}
+{%- assign text_3 = text_3 | default: nil -%}
+
+<div class="three-item">
+  {%- if icon_1 and text_1 -%}
+    <div class="three-item__item">
+      <div class="three-item__icon">
+        {%- include 'icon' with icon_1 -%}
+      </div>
+      <div class="three-item__text">
+        {{- text_1 -}}
+      </div>
+    </div>
+  {%- endif -%}
+  {%- if icon_2 and text_2 -%}
+    <div class="three-item__item">
+      <div class="three-item__icon">
+        {%- include 'icon' with icon_2 -%}
+      </div>
+      <div class="three-item__text">
+        {{- text_2 -}}
+      </div>
+    </div>
+  {%- endif -%}
+  {%- if icon_3 and text_3 -%}
+    <div class="three-item__item">
+      <div class="three-item__icon">
+        {%- include 'icon' with icon_3 -%}
+      </div>
+      <div class="three-item__text">
+        {{- text_3 -}}
+      </div>
+    </div>
+  {%- endif -%}
+</div>
+
+{%- assign icon_1 = nil -%}
+{%- assign icon_2 = nil -%}
+{%- assign icon_3 = nil -%}
+{%- assign text_1 = nil -%}
+{%- assign text_2 = nil -%}
+{%- assign text_3 = nil -%}

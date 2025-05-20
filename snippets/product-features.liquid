@@ -1,0 +1,100 @@
+{%- if mod_settings.enabled -%}
+  <section class="product-features" id="features" data-module="product-features">
+    {%- if mod_blocks.size > 0 -%}
+      <div class="product-features__background-slider">
+        {%- for mod_block in mod_blocks -%}
+          <div class="product-features__background-slider-item js-product-features-background-slider-item ">
+            {%- if mod_block.settings.image -%}
+              {%- assign mod_image_src = mod_block.settings.image | img_url: '1060x' -%}
+
+              {%- render 'image',
+                class: "product-features__background-slider-item-image",
+                src: mod_image_src,
+                object_fit: 'none',
+                loader: false
+              -%}
+
+              {%- assign mod_image_src = nil -%}
+
+            {%- endif -%}
+          </div>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+    {%- if mod_settings.subheading -%}
+      <div class="product-features__subheading">
+        {{- mod_settings.subheading -}}
+      </div>
+    {%- endif -%}
+
+    {%- if mod_settings.heading -%}
+      <h2 class="product-features__heading">
+        {{- mod_settings.heading -}}
+      </h2>
+    {%- endif -%}
+
+    {%- if mod_settings.description -%}
+      <div class="product-features__description">
+        {{- mod_settings.description -}}
+      </div>
+    {%- endif -%}
+
+    {%- if mod_blocks.size > 0 -%}
+      <div class="product-features__image-slider js-product-features-image-slider">
+        {%- for mod_block in mod_blocks -%}
+          <div class="product-features__image-slider-item">
+            {%- if mod_block.settings.image -%}
+              {%- assign mod_image_src = mod_block.settings.image | img_url: '1060x' -%}
+
+              {%- render 'image',
+                class: "product-features__image-slider-item-image",
+                src: mod_image_src,
+                object_fit: 'none',
+                loader: false
+              -%}
+
+              {%- assign mod_image_src = nil -%}
+
+            {%- endif -%}
+          </div>
+        {%- endfor -%}
+      </div>
+
+      <div class="product-features__content-slider">
+        {%- for mod_block in mod_blocks -%}
+          <div class="product-features__content-slider-item js-product-features-content-slider-item">
+            <div class="product-features__content-slider-item-icon">
+              {%- if mod_block.settings.icon -%}
+                {%- assign mod_image_src = mod_block.settings.icon | img_url: 'master' -%}
+
+                {%- render 'image',
+                  class: "product-features__content-slider-item-icon-image",
+                  src: mod_image_src,
+                  object_fit: 'none',
+                  loader: false
+                -%}
+
+                {%- assign mod_image_src = nil -%}
+              {%- endif -%}
+            </div>
+
+            <div class="product-features__content-slider-item-text">
+              {%- if mod_block.settings.title -%}
+                <h3 class="product-features__content-slider-item-title">
+                  {{- mod_block.settings.title -}}
+                </h3>
+              {%- endif -%}
+
+              {%- if mod_block.settings.description -%}
+                <div class="product-features__content-slider-item-description">
+                  {{- mod_block.settings.description -}}
+                </div>
+              {%- endif -%}
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </section>
+{%- endif -%}

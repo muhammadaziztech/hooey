@@ -1,0 +1,18 @@
+{%- comment -%}
+  Re-position Zendesk Web Widget
+{%- endcomment -%}
+<script type="text/javascript">
+  var loopOnStoreEl = document.getElementById('loop-onstore');
+  if (LoopOnstore && loopOnStoreEl) {
+    window.zESettings = {
+      webWidget: {
+        offset: {
+          vertical: '80px',
+          mobile: {
+            vertical: '68px'
+          }
+        }
+      }
+    };
+  }
+</script>

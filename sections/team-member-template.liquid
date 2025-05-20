@@ -1,0 +1,240 @@
+{%- assign metafields = article.metafields.accentuate -%}
+{%- assign team_tag = nil -%}
+{%- assign team_name = nil -%}
+{%- assign team_handle = nil -%}
+
+{%- for tag in article.tags -%}
+  {%- if tag contains 'team:' -%}
+    {%- assign team_tag = tag -%}
+    {%- assign team_name = tag | split: 'team:' | last -%}
+    {%- assign team_handle = tag | handleize -%}
+  {%- endif -%}
+{%- endfor -%}
+
+{%- capture related_members -%}
+  {%- assign limit = 4 -%}
+  {%- for member in blogs.team.articles -%}
+    {%- if member.handle != article.handle and member.tags contains team_tag -%}
+      <div class="related-members__item related-member">
+        <a href="{{- member.url -}}" class="related-members__link">
+          <div class="related-member__image-wrapper">
+            {%- if member.image -%}
+              {%- assign member_image_src = member.image | img_url: 'master' -%}
+              {%- include 'image',
+                class: 'related-member__image'
+                src: member_image_src,
+                object_fit: 'cover',
+                loader: false
+              -%}
+              {%- assign member_image_src = nil -%}
+            {%- endif -%}
+          </div>
+          <div class="related-member__name h4">
+            {{- member.title -}}
+          </div>
+        </a>
+      </div>
+      {%- assign limit = limit | minus: 1 -%}
+      {%- if limit <= 0 -%}
+        {% break %}
+      {%- endif -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endcapture -%}
+
+<div class="team-member-template" data-section-id="{{ section.id }}" data-section-type="team-member-template" data-module="team-member-template">
+  <div class="member__hero">
+    <div class="member-hero__image-wrapper">
+      {%- if metafields.hero_image -%}
+        {%- include 'image',
+          class: 'member-hero__image'
+          src: metafields.hero_image,
+          object_fit: 'cover',
+          loader: false
+        -%}
+      {%- endif -%}
+    </div>
+    <div class="member-hero__content">
+      {%- if team_handle -%}
+        <div class="member-hero__team-logo">
+          {%- include 'icon' with team_handle -%}
+        </div>
+      {%- endif -%}
+
+      <h1 class="h2 member-hero__title">
+        {{- article.title -}}
+      </h1>
+    </div>
+  </div>
+  <div class="member__nav">
+    <ul class="member-nav__list">
+      <li class="member-nav__item">
+        <a href="#bio" class="member-nav__link">{{- 'team.member.bio' | t -}}</a>
+      </li>
+      <li class="member-nav__item">
+        <a href="#awards" class="member-nav__link">{{- 'team.member.awards' | t -}}</a>
+      </li>
+      <li class="member-nav__item">
+        <a href="#gallery" class="member-nav__link">{{- 'team.member.gallery' | t -}}</a>
+      </li>
+      <li class="member-nav__item">
+        <a href="#teammates" class="member-nav__link">{{- 'team.member.teammates' | t -}}</a>
+      </li>
+    </ul>
+  </div>
+  <a class="anchor" name="bio"></a>
+  <div class="member__bio">
+    <div class="member-bio__image-wrapper">
+      {%- if article.image -%}
+        {%- assign image_src = article.image | img_url: 'master' -%}
+        {%- include 'image',
+          class: 'member-bio__image'
+          src: image_src,
+          object_fit: 'cover',
+          loader: false
+        -%}
+        {%- assign image_src = nil -%}
+      {%- endif -%}
+    </div>
+    <div class="member-bio__description">
+      {{- article.content -}}
+      <div class="member__share">
+        <div class="member-share__title label">
+          {{- 'team.member.follow' | t -}}
+        </div>
+        <ul class="member-share__list">
+          {%- assign social_networks = 'instagram,twitter,facebook' | split: ',' -%}
+          {%- for network in social_networks -%}
+            {%- assign field_name = network | append: '_url' -%}
+            {%- assign link_label = 'team.social.' | append: field_name | t -%}
+            {%- if metafields[field_name] -%}
+              <li class="member-share__item">
+                <a href="{{- metafields[field_name] -}}" class="member-share__link" target="_blank" rel="noopener" aria-label="{{- link_label -}}">
+                  {%- include 'icon' with network -%}
+                </a>
+              </li>
+            {%- endif -%}
+            {%- assign field_name = nil -%}
+            {%- assign link_label = nil -%}
+          {%- endfor -%}
+          {%- assign social_networks = nil -%}
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="member-footer-parallax">
+    <div class="member-bio__footer">
+      <div class="member-bio__featured-award">
+        {%- if metafields.primary_award -%}
+          {%- include 'icon' with 'award-2' -%}
+          {{- metafields.primary_award -}}
+        {%- endif -%}
+      </div>
+      <div class="member-bio__address">
+        {%- if metafields.address -%}
+          {%- include 'icon' with 'location' -%}
+          {{- 'team.member.live_in' | t | append: ' ' | append: metafields.address -}}
+        {%- endif -%}
+      </div>
+      <div class="member-bio__birthday">
+        {%- if metafields.birthday -%}
+          {%- comment -%}
+          TODO: Not sure why accentuate date field does not work.
+          {%- endcomment -%}
+          {%- assign month_day_year = metafields.birthday | split: '/' -%}
+          {%- include 'icon' with 'birthday' -%}
+          {{- month_day_year[2] | append: '-' | append: month_day_year[0] | append: '-' | append: month_day_year[1] | date: format: 'date' -}}
+        {%- endif -%}
+      </div>
+    </div>
+
+    {%- if metafields.video_url -%}
+      <div class="member__video">
+        {%- include 'video-player', video_id: metafields.video_url, autoplay: true -%}
+      </div>
+    {%- endif -%}
+
+    {%- assign num_awards = metafields.award_year | size -%}
+    {%- if num_awards -%}
+      <a class="anchor" name="awards"></a>
+      <div class="member__awards">
+        <h3 class="h3 member-awards__title">
+          {{- 'team.member.awards' | t -}}
+        </h3>
+        <div class="member-awards__list">
+          {%- for i in (0..num_awards) -%}
+            {%- assign award_display = metafields.award_display[i] -%}
+            {%- if award_display != blank -%}
+              <div class="member-awards__item member-award">
+                <div class="member-award__year">
+                  {{- metafields.award_year[forloop.index0] -}}
+                </div>
+                <div class="member-award__title">
+                  {{- metafields.award_title[forloop.index0] -}}
+                </div>
+                <div class="member-award__location">
+                  {{- metafields.award_location[forloop.index0] -}}
+                </div>
+              </div>
+            {%- endif -%}
+            {%- assign award_display = nil -%}
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+    {%- assign num_awards = nil -%}
+  </div>
+
+  {%- assign num_images = metafields.gallery_image | size -%}
+  {%- if num_images -%}
+    <a class="anchor" name="gallery"></a>
+    <div class="member__gallery member__gallery--{{- num_images -}}">
+      {%- for i in (1..num_images) -%}
+        <div class="member-gallery__image-wrapper">
+          {%- include 'image',
+            class: 'member-gallery__image'
+            src: metafields.gallery_image[forloop.index0],
+            object_fit: 'cover',
+            loader: false
+          -%}
+          {%- if metafields.gallery_image_description[forloop.index0] -%}
+            <div class="member-gallery__description">
+              {{- metafields.gallery_image_description[forloop.index0] -}}
+            </div>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+
+  {%- if related_members -%}
+    <a class="anchor" name="teammates"></a>
+    <div class="related-members">
+      <h3 class="h2 related-members__title">
+        {{- 'team.member.related_member' | t -}}
+      </h3>
+      <div class="related-members__list">
+        {{- related_members -}}
+      </div>
+    </div>
+  {%- endif -%}
+</div>
+
+<style>
+  .member-bio__image-wrapper:after {
+    background-image: url({{ 'separator-horizontal.png' | asset_url }});
+  }
+
+  @media (min-width: 1008px) {
+    .member-bio__image-wrapper:after {
+      background-image: url({{ 'separator-vertical.png' | asset_url }});
+    }
+  }
+</style>
+
+{%- assign metafields = nil -%}
+{%- assign team_tag = nil -%}
+{%- assign team_name = nil -%}
+{%- assign team_handle = nil -%}
+{%- assign related_members = nil -%}

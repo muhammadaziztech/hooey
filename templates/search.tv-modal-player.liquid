@@ -1,0 +1,22 @@
+{%- layout none -%}
+
+{%- assign youtube_id = '' -%}
+{%- capture content -%}
+  {%- for article in search.results -%}
+    {%- assign video_id = article.metafields.accentuate.video_url -%}
+    {%- include 'tv-item',
+      item: article,
+      is_show_full_content: true,
+      is_show_learn_more: true,
+      is_show_share: true
+    -%}
+    {%- include 'tv-next-item', item: article -%}
+  {%- endfor -%}
+{%- endcapture -%}
+
+{
+  "videoId": {{ video_id | json }},
+  "content": {{ content | json }}
+}
+
+{%- assign youtube_id = nil -%}

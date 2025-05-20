@@ -1,0 +1,51 @@
+{%- assign item = item | default: nil -%}
+{%- assign found = false -%}
+{%- assign found_item = nil -%}
+{%- assign category_title = nil -%}
+
+{%- if item -%}
+  {%- for tag in item.tags -%}
+    {%- if tag contains 'category:' -%}
+      {%- assign category_title = tag | remove: 'category:' -%}
+      {%- for article in blogs.tv.articles -%}
+        {%- if article.tags contains tag and article.metafields.accentuate.video_url -%}
+          {%- if found -%}
+            {%- assign found_item = article -%}
+            {% break %}
+          {%- elsif article.handle == item.handle -%}
+            {%- assign found = true -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endif -%}
+
+{%- if found_item -%}
+  <a class="tv-next-item" href="{{- found_item.url -}}" data-video-handle="{{- found_item.handle -}}" data-module="tv-play-button">
+    <div class="tv-next-item__image-wrapper">
+      {%- if found_item.image -%}
+        {%- assign image_src = found_item.image | img_url: 'master' -%}
+        {%- include 'image',
+          class: 'tv-next-item__image',
+          src: image_src,
+          object_fit: 'cover',
+          loader: false
+        -%}
+        {%- assign image_src = nil -%}
+      {%- endif -%}
+    </div>
+    <div class="tv-next-item__body">
+      <div class="tv-next-item__label label">{{ 'tv.up_next' | t }} {{ category_title }}</div>
+      <div class="tv-next-item__title h4">
+        {{- found_item.title -}}
+        {%- include 'icon' with 'arrow-down' -%}
+      </div>
+    </div>
+  </a>
+{%- endif -%}
+
+{%- assign item = nil -%}
+{%- assign found = nil -%}
+{%- assign found_item = nil -%}
+{%- assign category_title = nil -%}

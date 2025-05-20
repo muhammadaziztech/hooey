@@ -1,0 +1,47 @@
+{%- assign logo = logo | default: nil -%}
+{%- assign title = title | default: nil -%}
+{%- assign text = text | default: nil -%}
+{%- assign link_title = link_title | default: nil -%}
+{%- assign link_url = link_url | default: nil -%}
+
+<div class="help-block">
+  <div class="help-block__logo">
+    {%- if logo -%}
+      {%- assign logo_image = logo | img_url -%}
+      {%- include 'image',
+        class: "help-block__logo-image",
+        src: logo_image,
+        object_fit: 'contain',
+        loader: false
+      -%}
+      {%- assign logo = nil -%}
+    {%- endif -%}
+  </div>
+  <div class="help-block__text-wrapper">
+    <h3 class="h3 help-block__title">{{ title }}</h3>
+    <p class="help-block__text">{{ text }}</p>
+  </div>
+  <div class="help-block_link_wrapper">
+    <a class="h4 help-block__link" href="{{ link_url }}">{{ link_title }}</a>
+  </div>
+</div>
+
+{%- assign logo = nil -%}
+{%- assign title = nil -%}
+{%- assign text = nil -%}
+{%- assign link_title = nil -%}
+{%- assign link_url = nil -%}
+
+<style>
+  .help-block::before,
+  .help-block::after {
+    background-image: url({{ 'separator-horizontal.png' | asset_url }});
+  }
+
+  @media (min-width: 768px) {
+    .help-block::before,
+    .help-block::after {
+      background-image: url({{ 'separator-vertical.png' | asset_url }});
+    }
+  }
+</style>

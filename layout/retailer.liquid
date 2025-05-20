@@ -1,0 +1,898 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, height=device-height, minimum-scale=1.0, user-scalable=0">
+  <meta name="theme-color" content="{{ settings.accent_color }}">
+
+  <title>
+    {{ page_title }}{% if current_tags %}{% assign meta_tags = current_tags | join: ', ' %} &ndash; {{ 'general.meta.tags' | t: tags: meta_tags }}{% endif %}{% if current_page != 1 %} &ndash; {{ 'general.meta.page' | t: page: current_page }}{% endif %}{% unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless %}
+  </title>
+
+  {%- if page_description -%}
+  <meta name="description" content="{{ page_description | escape }}">
+  {%- endif -%}
+
+  <link rel="canonical" href="{{ canonical_url }}">
+
+  {%- if settings.favicon -%}
+  <link rel="shortcut icon" href="{{ settings.favicon | img_url: '32x32' }}" type="image/png">
+  {%- else -%}
+  {%- include 'favicon' -%}
+  {%- endif -%}
+
+  {% include 'social-meta-tags' %}
+
+  {{ content_for_header }}
+
+  {% include 'fonts' %}
+  <link rel="stylesheet" href="{{ 'theme.scss.css' | asset_url }}">
+
+  <script>
+    var SHOPIFY_CDN = "{{ 'test.jpg' | asset_url }}".replace(/test.jpg\?\d*/, '');
+
+    // This allows to expose several variables to the global scope, to be used in scripts
+    window.theme = {
+      template: {{ template.name | json }},
+    localeRootUrl: {% if request.locale.primary %} ''{% else %} { { request.locale.root_url | json } } {% endif %},
+    shopCurrency: { { shop.currency | json } },
+    moneyFormat: { { shop.money_format | json } },
+    moneyWithCurrencyFormat: { { shop.money_with_currency_format | json } },
+    useNativeMultiCurrency: {% if shop.enabled_currencies.size > 1 %} true{% else %} false{% endif %},
+    currencyConversionEnabled: {% if shop.enabled_currencies.size > 1 %} false{% else %} { { settings.currency_conversion_enabled | json } } {% endif %},
+    currencyConversionMoneyFormat: { { settings.currency_conversion_money_format | json } },
+    currencyConversionRoundAmounts: { { settings.currency_conversion_round_amounts | json } },
+    productImageSize: { { settings.product_image_size | json } },
+    searchMode: { { settings.search_mode | json } },
+    showPageTransition: { { settings.show_page_transition | json } },
+    showElementStaggering: { { settings.show_element_staggering | json } },
+    showImageZooming: { { settings.show_image_zooming | json } }
+    };
+
+    window.languages = {
+      cartAddNote: {{ 'cart.general.add_note' | t | json }},
+    cartEditNote: { { 'cart.general.edit_note' | t | json } },
+    productImageLoadingError: { { 'product.slideshow.image_loading_error' | t | json } },
+    productFormAddToCart: {% if product.template_suffix == 'pre-order' %} { { 'product.form.pre_order' | t | json } } {% else %} { { 'product.form.add_to_cart' | t | json } } {% endif %},
+    productFormUnavailable: { { 'product.form.unavailable' | t | json } },
+    productFormSoldOut: { { 'product.form.sold_out' | t | json } },
+    shippingEstimatorOneResult: { { 'cart.shipping_estimator.one_result_title' | t | json } },
+    shippingEstimatorMoreResults: { { 'cart.shipping_estimator.more_results_title' | t | json } },
+    shippingEstimatorNoResults: { { 'cart.shipping_estimator.no_results_title' | t | json } }
+    };
+
+    window.lazySizesConfig = {
+      loadHidden: false,
+      hFac: 0.5,
+      expFactor: 2,
+      ricTimeout: 150,
+      lazyClass: 'Image--lazyLoad',
+      loadingClass: 'Image--lazyLoading',
+      loadedClass: 'Image--lazyLoaded'
+    };
+
+    document.documentElement.className = document.documentElement.className.replace('no-js', 'js');
+    document.documentElement.style.setProperty('--window-height', window.innerHeight + 'px');
+
+    // We do a quick detection of some features (we could use Modernizr but for so little...)
+    (function () {
+      document.documentElement.className += ((window.CSS && window.CSS.supports('(position: sticky) or (position: -webkit-sticky)')) ? ' supports-sticky' : ' no-supports-sticky');
+      document.documentElement.className += (window.matchMedia('(-moz-touch-enabled: 1), (hover: none)')).matches ? ' no-supports-hover' : ' supports-hover';
+    }());
+
+    // This code is done to force reload the page when the back button is hit (which allows to fix stale data on cart, for instance)
+    if (performance.navigation.type === 2) {
+      location.reload(true);
+    }
+  </script>
+
+  <script src="{{ 'lazysizes.min.aio.min.js' | asset_url }}" async></script>
+
+  {% if settings.currency_conversion_enabled %}
+  <script src="//cdn.shopify.com/s/javascripts/currencies.js" defer></script>
+  {% endif %}
+
+  {%- if template == 'customers/addresses' -%}
+  <script src="{{ 'shopify_common.js' | shopify_asset_url }}" defer></script>
+  <script src="{{ 'customer_area.js' | shopify_asset_url }}" defer></script>
+  {%- endif -%}
+
+  <script src="https://cdn.polyfill.io/v3/polyfill.min.js?unknown=polyfill&features=fetch,Element.prototype.closest,Element.prototype.remove,Element.prototype.classList,Array.prototype.includes,Array.prototype.fill,Object.assign,CustomEvent,IntersectionObserver,IntersectionObserverEntry,URL" defer></script>
+  <script src="{{ 'libs.min.aio.min.js' | asset_url }}" defer></script>
+  <script src="{{ 'theme.min.aio.min.js' | asset_url }}" defer></script>
+
+  {%- if settings.is_dev_mode -%}
+  {{- '/dev/main.js' | script_tag -}}
+  {%- else -%}
+  {{- 'main.min.aio.min.css' | asset_url | stylesheet_tag -}}
+  {%- endif -%}
+  {%- include 'style' -%}
+
+  {% include 'microdata-schema' %}
+
+  <title>Pepperi</title>
+  <script src="https://cdn.shopify.com/s/files/1/0037/6153/7069/files/jquery-1.7.1.min.js?3162" type="text/javascript"></script>
+  <script src="https://cdn.shopify.com/s/files/1/0037/6153/7069/files/jquery.base64.min.js?3162" type="text/javascript"></script>
+
+  <script type="text/javascript" language="javascript">
+    var $ = jQuery.noConflict();
+    $(document).ready(function () {
+      $("#loginMailTxt").focus();
+      $("#forgotYourPassBtn").click(function () { showForgotPassWin() });
+      $("#sendBtnForgotPassword").click(function () { forgotPassValidation() });
+      $("div [id^=backToLoginWinBtn]").click(function () { $("#forgotMsg").show(); showForgotPassWin() });
+      $("#changePasswordBtn").click(function () { gotoChangePassword(); });
+      $("#saveNewPassword").click(function () { checkChangePassValidation(); });
+      $("#cancelNewPassword").click(function () { showForgotPassWin() });
+      $("#loginBtn").click(function () { logInValidation(); });
+      $("#loginMailTxt").click(function () { if ($("#loginInnerWin").is(':visible')) { $("#loginErr").hide(); } });
+      $("#logInPassTxt").click(function () { if ($("#loginInnerWin").is(':visible')) { $("#loginErr").hide(); } });
+      $("#forgotPassTxt").click(function () { if ($("#forgotPassword").is(':visible')) { $("#forgotPasswordErr").hide(); } });
+      $("#changePassMail").click(function () { if ($("#changePassword").is(':visible')) { $("#changePassErr").hide(); } });
+      $("#txtOldPassword").click(function () { if ($("#changePassword").is(':visible')) { $("#changePassErr").hide(); } });
+      $("#txtNewPassword").click(function () { if ($("#changePassword").is(':visible')) { $("#changePassErr").hide(); } });
+      $("#txtRePassword").click(function () { if ($("#changePassword").is(':visible')) { $("#changePassErr").hide(); } });
+
+
+      $(".cancelButon").click(function () {
+        $("#forgotPassTxt").val("");
+        $("#loginMailTxt").val("");
+        $("#logInPassTxt").val("");
+        $("#changePassMail").val("");
+        $("#txtOldPassword").val("");
+        $("#txtNewPassword").val("");
+        $("#txtRePassword").val("");
+        $("#genericError").hide();
+      })
+    });
+
+    function checkChangePassValidation() {
+      var valid = true;
+      var msg = 1;
+      $("#changePassword [class^=field]").each(function (element) {
+        if ($.trim($(this).val()) == "") {
+          valid = false;
+        }
+        if ($(this).hasClass("red")) {
+          valid = false;
+          msg = 2;
+        }
+        if ($.trim($("#txtNewPassword").val()) != $.trim($("#txtRePassword").val())) {
+          valid = false;
+          msg = 3;
+        }
+      });
+
+      if (!valid) {
+
+        switch (msg) {
+          case 1: showMsg("changePassErr", "NOTE: All fields are mandatory", "Please check it and try again", false); break; // empty feild
+          case 2: showMsg("changePassErr", "Incorrect Email address.", "Please check it and try again", false); break; // mail is incorrect
+          case 3: showMsg("changePassErr", "Re-enter: Password fields do not match.", "Please check it and try again", false); break; // re-enter password incorrect
+        }
+
+      }
+      else {
+        $("#saveNewPassword").hide();
+        $("#cancelNewPassword").hide();
+        WrntyLogin("ChangePassword");
+      }
+    }
+
+    function forgotPassValidation() {
+      var valid = true;
+      if (isValidEmail($("#forgotPassTxt").val()) == false) {
+        valid = false;
+        $("#forgotMailSuc").hide();
+        $("#forgotMailFail").hide();
+        $("#genericError").hide();
+        showMsg("forgotPasswordErr", "NOTE: Email field is mandatory.", "Please check it and try again.", false);
+      }
+      else {
+        /* $("#sendBtnForgotPassword").hide();*/
+        /*$("#backToLoginWinBtn").hide();*/
+        WrntyLogin("ForgotPassword");
+      }
+    }
+
+    function isValidEmail(email) {
+      var re = /^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([ \t]*\r\n)?[ \t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([ \t]*\r\n)?[ \t]+)?")@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/i;
+      if (re.test(email) == true) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+
+    function logInValidation() {
+      var valid = true;
+      if ($("#loginMailTxt").hasClass("red") || $.trim($("#logInPassTxt").val()) == "") {
+        valid = false;
+
+        showMsg("loginErr", "The username or password you entered is incorrect", "Please check it and try again", false);
+      }
+      else {
+        $("#loginBtn").hide();
+        WrntyLogin("");
+      }
+    }
+
+    function reSizeWin(size) {
+      $("#loginWin [class=center]").animate({
+        height: size + "px"
+      }, 300);
+    }
+
+    function showMsg(divID, line1, line2, isSuccessMsg) {
+      div = $("#" + divID);
+      var spanArr = $("#" + divID + " span");
+      $(spanArr[0]).html(line1);
+      $(spanArr[1]).html(line2);
+
+      $(div).slideDown('300');
+    }
+
+    function showForgotPassWin() {
+      clearErrSucMsg();
+      clearAllFieds();
+      if ($("#loginInnerWin").is(':visible')) {
+
+        $("#loginInnerWin").hide();
+        $("#loginHeaderTitle").html("Forgot your password?");
+        $("#forgotPassword").fadeIn('slow');
+      }
+      else {
+
+        $("#forgotPassword").hide();
+        $("#changePassword").hide();
+        $("#loginHeaderTitle").html("Log in to your account");
+        $("#loginInnerWin").fadeIn('slow');
+      }
+    }
+
+    function gotoChangePassword() {
+      clearErrSucMsg();
+
+      $("#loginHeaderTitle").html("Change your password");
+      $("#loginInnerWin").hide();
+      $("#forgotPassword").hide();
+      $("#changePassword").fadeIn('slow');
+    }
+
+    function clearErrSucMsg() {
+      $(".error,.success").each(function (element) {
+        if ($(this).is(':visible'))
+          $(this).hide();
+      });
+    }
+
+    function clearAllFieds() {
+
+      $('input:text').each(function (element) {
+        $(this).val("");
+      });
+      $('input:password').each(function (element) {
+        $(this).val("");
+      });
+
+    }
+
+    function WrntyLogin(functionName) {
+      var email = functionName == "" ? $.trim($("#loginMailTxt").val()) : functionName.toLowerCase() == "forgotpassword" ? $.trim($("#forgotPassTxt").val()) : $.trim($("#changePassMail").val());
+      var pass = functionName == "" ? $.trim($("#logInPassTxt").val()) : functionName.toLowerCase() == "changepassword" ? $.trim($("#txtNewPassword").val()) : "";
+      var oldPassword = $.trim($("#txtOldPassword").val());
+
+      var sURL = "https://ng.wrnty-online.com/handlers/CrossDomain.ashx?email=" + $.base64.encode(email) + "&password=" + $.base64.encode(pass) + "&oldPassword=" + $.base64.encode(oldPassword) + "&functionName=" + functionName;
+      var URL = "http://wvos.wrnty-online.com/handlers/CrossDomain.ashx?email=" + $.base64.encode(email) + "&password=" + $.base64.encode(pass) + "&oldPassword=" + $.base64.encode(oldPassword) + "&functionName=" + functionName;
+
+      var loginURL = "https://ng.wrnty-online.com/login/wrntylogin.aspx";
+
+
+      if ($.browser.msie && window.XDomainRequest) {// Use Microsoft XDR if browser is IE
+        var xdr = new XDomainRequest();
+        xdr.timeout = 30000;
+        if (document.location.protocol == 'https:') {
+          xdr.open("get", sURL);
+        }
+        else {
+          xdr.open("get", URL);
+        }
+
+        xdr.onload = function () {
+          // XDomainRequest doesn't provide responseXml, so if you need it:
+          var dom = new ActiveXObject("Microsoft.XMLDOM");
+          dom.async = false;
+          if (xdr.responseText.toLowerCase() == "true") {
+            SuccessResponse(functionName, email, pass, loginURL);
+          }
+          else {//SHOW INVALID EMAIL OR PASSWORD MESSAGE
+            ErrorResponse(xdr.responseText, functionName);
+          }
+        };
+
+        xdr.onerror = function () {//SHOW GLOBAL ERROR MESSAGE
+
+          showMsg("loginErr", "Operation failed, please try again.", "", false);
+        };
+
+        xdr.send();
+      }
+      else {
+        $.ajax({
+          type: "GET",
+          url: sURL,
+          dataType: 'html',
+          async: false,
+          cache: false,
+          success: function (response) {
+            if (response.toLowerCase() == "true") {
+              $("#genericError").hide();
+              SuccessResponse(functionName, email, pass, loginURL);
+            }
+            else {//SHOW INVALID EMAIL OR PASSWORD OR GLOBAL ERROR MESSAGE
+
+              ErrorResponse(response, functionName);
+            }
+          },
+
+          error:
+            function () {//SHOW GLOBAL ERROR MESSAGE
+              $("#forgotMailSuc").hide();
+              $("#genericError").show();
+            }
+        });
+      }
+    }
+
+    function SuccessResponse(functionName, email, pass, loginURL) {
+      if (functionName.toLowerCase() == "changepassword") {
+
+        $("#forgotPassword").hide();
+        $("#changePassword").hide();
+        $("#loginHeaderTitle").html("Log in to your account");
+        $("#loginInnerWin").fadeIn('slow');
+        $("#saveNewPassword").show();
+        $("#cancelNewPassword").show();
+        var encodedParamsURL = loginURL + "?a=" + $.base64.encode(email) + "&b=" + $.base64.encode(pass);
+        window.open(encodedParamsURL, '_blank', 'directories=no,channelmode=no,fullscreen=no,width=800,height=600,location=yes,menubar=yes,resizable=yes,scrollbars=yes,status=yes,titlebar=yes,toolbar=yes');
+      }
+      else if (functionName.toLowerCase() == "forgotpassword") {
+
+        /*$("#forgotMsg").hide();*/
+        $("#forgotPasswordErr").hide();
+        $("#forgotPassword").show();
+        $("#forgotMailSuc").show();
+        $("#sendBtnForgotPassword").show();
+        $("#backToLoginWinBtn").show();
+      }
+      else {//STANDART LOGIN, EMAIL & PASSWORD OK, AUTO LOGIN TO WRNTY SITE
+        $("#loginBtn").show();
+        var encodedParamsURL = loginURL + "?a=" + $.base64.encode(email) + "&b=" + $.base64.encode(pass);
+        window.open(encodedParamsURL, '_blank', 'directories=no,channelmode=no,fullscreen=no,width=800,height=600,location=yes,menubar=yes,resizable=yes,scrollbars=yes,status=yes,titlebar=yes,toolbar=yes');
+      }
+    }
+
+    function ErrorResponse(response, functionName) {
+      var arrResponse = response.split("#");
+
+      if (functionName.toLowerCase() == "changepassword") {
+        $("#saveNewPassword").show();
+        $("#cancelNewPassword").show();
+
+        showMsg("changePassErr", arrResponse[0] + " <br/>" + (arrResponse.length > 1 ? arrResponse[1] : ""), "Please check it and try again", false);
+      }
+      else if (functionName.toLowerCase() == "forgotpassword") {
+        $("#sendBtnForgotPassword").show();
+        $("#backToLoginWinBtn").show();
+
+        /*$("#forgotMailFail").show();*/
+        showMsg("forgotPasswordErr", arrResponse[0] + " <br/>" + (arrResponse.length > 1 ? arrResponse[1] : ""), "Please check it and try again", false);
+      }
+      else {
+        $("#loginBtn").show();
+
+        showMsg("loginErr", "The username or password you entered is incorrect", "Please check it and try again", false);
+      }
+    }
+
+    // clear fields on spirit-button click
+
+
+  </script>
+  <style type="text/css">
+    body {
+      background-color: #fff;
+      font-family: "segoeui", arial;
+      color: #444;
+    }
+
+    /********************************** login **********************************/
+    .form-container {
+      margin: 60px auto 0;
+      max-width: 528px;
+    }
+
+    .form {
+      padding: 0 10% 5% 9%;
+      border-radius: 5px;
+      background-color: #efefef;
+      border: solid 2px #e3e4e8;
+    }
+
+    .login {
+      width: 100%;
+    }
+
+    .login .top .header {
+      padding: 3% 0 10px 0;
+      font-size: 18px;
+      float: left;
+    }
+
+    .login .bottom {
+      width: 100%;
+    }
+
+    .inputs a,
+    .inputs a:hover,
+    .login-footer a,
+    .login-footer a:hover {
+      color: #444;
+    }
+
+    .inputs a:hover,
+    .login-footer a:hover {
+      text-decoration: none;
+    }
+
+    .login .inputs .lable {
+      /*width:170px;*/
+      height: 20px;
+      padding-bottom: 0px;
+      padding-right: 0px;
+      padding-top: 0px;
+    }
+
+    .login .inputs .input {
+      width: 100%;
+    }
+
+    .login .inputs .input .field {
+      width: 97%;
+      height: 37px;
+      border-radius: 3px;
+      background-color: #fff;
+      border: solid 1px #e3e4e8;
+      margin-top: 10px;
+      font-size: 18px;
+      color: #333;
+      padding-left: 3%;
+    }
+
+    .sideLinks {
+      text-align: right;
+      color: #ff5100;
+      text-decoration: none;
+      text-decoration-line: none;
+      text-decoration-style: initial;
+      text-decoration-color: initial;
+    }
+
+    .center {
+      display: block;
+    }
+
+    .btn-cont {
+      float: left;
+    }
+
+    .btn-100x20 {
+      border: 0;
+      background-color: #ff5100;
+      color: #fff;
+      font-size: 24px;
+      font-weight: bold;
+      text-transform: uppercase;
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .btn-100x20:hover {
+      background-position: 0 0;
+      cursor: pointer;
+      background-color: #e34800;
+    }
+
+    .login-footer {
+      width: 520px;
+      height: 30px;
+      margin: 0 auto;
+    }
+
+    .fl {
+      float: left;
+    }
+
+    .fr {
+      float: right;
+    }
+
+    .keep {
+      margin-top: 20px;
+      min-height: 55px;
+      height: auto;
+      font-size: 14px;
+    }
+
+    .footer {
+      margin-top: 20px;
+      min-height: 51px;
+    }
+
+    .mt10 {
+      margin-top: 10px;
+    }
+
+    < !-- font sould be "segoeui"but this font was unavailable @font-face {
+      font-family: segoeui;
+      src: url(../Styles/Fonts/segoeui_2.ttf);
+    }
+
+    -->
+
+    /********************************** forgot password **********************************/
+    #forgotPassword {
+      display: none;
+    }
+
+    .spanBtn:hover {
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    .displayNone {
+      display: none;
+    }
+
+    .success {
+      color: green !important;
+      margin-top: 5px;
+    }
+
+    .failier {
+      color: red !important;
+      margin-top: 5px;
+    }
+
+    .success div .bo {
+      font-weight: bold;
+    }
+
+    .btn-cont {
+      float: left;
+    }
+
+    .forgot {
+      width: 480px;
+      height: 53px;
+      float: left;
+      padding: 0px 20px 10px 20px;
+    }
+
+    .login .inputs2 .lable {
+      width: 170px;
+      height: 20px;
+      padding: 0px 0px 0px 0px;
+    }
+
+    .login .inputs2 .input {
+      width: 100%;
+    }
+
+    .login .inputs2 .input .field {
+      width: 97%;
+      height: 37px;
+      border-radius: 3px;
+      background-color: #fff;
+      border: solid 1px #e3e4e8;
+      margin-top: 10px;
+      font-size: 18px;
+      color: #333;
+      padding-left: 3%;
+    }
+
+    .cancelButon {
+      color: #ff5100;
+      text-decoration: none;
+    }
+
+    .cancelButon:hover {
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    /********************************** change Password **********************************/
+    #changePassword .btn-cont2 {
+      width: 302px !important;
+    }
+
+    #changePassword .btn-cont3 {
+      width: 416px !important;
+    }
+
+    #changePassword {
+      display: none;
+    }
+
+    #cancelNewPassword {
+      margin-right: 10px;
+    }
+
+    .mt20 {
+      margin-top: 20px;
+    }
+
+    .btn-150x31 {
+      width: 150px;
+      height: 25px;
+      padding: 6px 0px 0px 0px;
+      text-align: center;
+      background-position: 0 -101px;
+      color: #fff;
+      font-weight: bold;
+      float: right;
+    }
+
+    .btn-150x31:hover {
+      background-position: 0 -60px;
+      cursor: pointer;
+    }
+
+    .Create-New-Account .top {
+      width: 520px;
+      height: 45px;
+      background: url("../PepperiFiles/sprite-frames.png?v=5.4.0.0") no-repeat 0px -560px;
+    }
+
+    .Create-New-Account .top .header {
+      width: 400px;
+      height: 26px;
+      padding: 10px 0px 0px 20px;
+      color: #fff;
+      font: normal normal bold 18px/18px tahoma;
+      float: left;
+    }
+
+    .Create-New-Account .center {
+      width: 520px;
+      height: 520px;
+      background: url('../PepperiFiles/Win520px_CenterBG.jpg?v=5.4.0.0') repeat-y;
+    }
+
+    .Create-New-Account .bottom {
+      width: 520px;
+      height: 17px;
+      background: url("../PepperiFiles/sprite-frames.png?v=5.4.0.0") no-repeat 0px -615px;
+    }
+
+    .Create-New-Account .center .inputs {
+      width: 302px;
+      height: 60px;
+      margin: 0 auto;
+    }
+
+    .Create-New-Account .center .inputs .lable {
+      width: 302px;
+      height: 20px;
+      font: normal normal normal 14px/18px tahoma;
+    }
+
+    .Create-New-Account .center .inputs .input {
+      width: 300px;
+      height: 32px;
+    }
+
+    .Create-New-Account .center .inputs .input .field {
+      width: 295px;
+      height: 30px;
+      line-height: 30px;
+      padding: 0px 0px 0px 5px;
+      border: solid 1px #8ab4da;
+      font-size: 18px;
+      color: #444;
+    }
+
+    .Create-New-Account .center .captcha {
+      width: 302px;
+      height: 120px;
+      margin: 0 auto;
+    }
+
+    /********************************** error **********************************/
+    .error {
+      color: Red !important;
+      margin-top: 5px;
+    }
+
+    .error div {
+      width: 460px;
+    }
+
+    .error div .bo {
+      font-weight: bold;
+    }
+
+    .error a,
+    .error a:hover {
+      color: #444;
+    }
+
+    .error a:hover {
+      text-decoration: none;
+    }
+  </style>
+
+</head>
+
+<body>
+  <a class="PageSkipLink u-visually-hidden" href="#main">{{ 'header.navigation.skip_to_content' | t }}</a>
+  <span class="LoadingBar"></span>
+  <div class="PageOverlay"></div>
+  <div class="PageTransition"></div>
+
+  {% section 'popup' %}
+  {% section 'sidebar-menu' %}
+
+  {%- if template != 'cart' -%}
+  {% include 'cart-drawer' %}
+  {%- endif -%}
+
+  <div class="PageContainer">
+    {% section 'announcement' %}
+    {% section 'header' %}
+
+    <div class="form-container">
+      <div class="form">
+        <div class="login ac" id="loginWin">
+          <div class="top">
+            <div id="loginHeaderTitle" class="header">Log in to your account</div>
+          </div>
+          <div class="center">
+            <!--start login-->
+            <div id="loginInnerWin">
+              <div class="inputs ml2">
+                <div class="input pl3">
+                  <input tabindex="1" id="loginMailTxt" class="field" type="email" name="Email" placeholder='example@mail.com' />
+                </div>
+              </div>
+              <div class="inputs">
+                <div class="input">
+                  <input tabindex="2" id="logInPassTxt" class="field" type="password" placeholder='Enter your password' />
+                </div>
+                <div class="error displayNone" id="loginErr">
+                  <div><span></span></div>
+                  <div><span></span></div>
+                </div>
+                <div style="margin: 5px 0;" class="dvError"></div>
+                <div class="keep">
+                  <div class="fr sideLinks">
+                    <div>
+                      <div id="forgotYourPassBtn" class="fr" style="width:172px;"><span class="spanBtn">Forgot your password?</span></div>
+                    </div>
+                    <div>
+                      <div class="fr mt10" id="changePasswordBtn"><span class="spanBtn">Change password</span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="footer">
+                <div class="btn-cont">
+                  <div id="loginBtn" class="sprite-buttons btn-100x20">LOGIN</div>
+                </div>
+              </div>
+            </div>
+            <!--end start login-->
+
+            <!--start forgot password-->
+            <div id="forgotPassword">
+              <div id="forgotMsg">
+                <div class="inputs2">
+                  <div class="input"><input id="forgotPassTxt" class="field" type="email" title="Email:" name="Email" placeholder='example@mail.com' />
+                  </div>
+                </div>
+                <div class="keep">
+                  <div class="fl fontF">
+                    Please enter the email address associated with your account.
+                    We'll send your new password to this email.
+                  </div>
+                  <div id="forgotPasswordErr" class="error">
+                    <div><span></span></div>
+                    <div><span></span></div>
+                  </div>
+                  <div class="success displayNone" id="forgotMailSuc">
+                    <div><span>Note: A new password will be sent to your email address.</span></div>
+                    <div><span>Please check your mail in a few min.</span></div>
+                  </div>
+                  <div class="failier displayNone" id="forgotMailFail">
+                    <div><span>Note: A new password will be sent to your email address.</span></div>
+                    <div><span>Please check your mail in a few min.</span></div>
+                  </div>
+                  <div class="failier displayNone" id="genericError">
+                    <div><span>Operation failed, please try again.</span></div>
+                  </div>
+                </div>
+                <div style="margin: 5px 0;" class="dvError"></div>
+                <div class="footer">
+                  <div class="fr">
+                    <div id="backToLoginWinBtn" class="sprite-buttons cancelButon">Cancel</div>
+                  </div>
+                  <div class="btn-cont">
+                    <div id="sendBtnForgotPassword" class="sprite-buttons btn-100x20">Send</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!--end forgot password-->
+
+            <!--start change password-->
+            <div class="Create-New-Account ac" id="changePassword">
+              <div class="inputs">
+                <div class="input">
+                  <input id="changePassMail" class="field" type="email" title="Your Email:" name="Email" placeholder='example@mail.com' />
+                </div>
+              </div>
+              <div class="inputs">
+                <div class="input">
+                  <input id="txtOldPassword" class="field" type="password" title="Old Password:" placeholder='Old password:' />
+                </div>
+              </div>
+              <div class="inputs">
+                <div class="input">
+                  <input id="txtNewPassword" class="field" type="password" title="New Password:" placeholder='New password:' />
+                </div>
+              </div>
+              <div class="inputs">
+                <div class="input">
+                  <input id="txtRePassword" class="field" type="password" title="Re-enter Your Password:" placeholder='Re-enter your password:' />
+                </div>
+              </div>
+              <div class="error displayNone" id="changePassErr2">
+                <div><span></span></div>
+                <div><span></span></div>
+              </div>
+              <div class="error displayNone" id="changePassErr">
+                <div><span></span></div>
+                <div><span></span></div>
+              </div>
+              <div class="footer">
+                <div id="newPassword" class="btn-cont">
+                  <div id="saveNewPassword" class="sprite-buttons btn-100x20">Send</div>
+                </div>
+                <div id="newPassword" class="fr">
+                  <div id="cancelNewPassword" class="sprite-buttons cancelButon">Cancel</div>
+                </div>
+              </div>
+            </div>
+            <!--end change password-->
+          </div>
+          <div class="bottom">
+          </div>
+        </div>
+      </div>
+    </div>
+    <main id="main" role="main">
+      {{ content_for_layout }}
+    </main>
+
+    {% section 'footer' %}
+  </div>
+
+  {%- unless settings.is_dev_mode -%}
+  {{- 'main.aio.min.js' | asset_url | script_tag -}}
+  {%- endunless -%}
+</body>
+
+</html>

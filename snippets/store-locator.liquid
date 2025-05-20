@@ -1,0 +1,10 @@
+{%- capture template_content -%}{{ content_for_layout }}{%- endcapture -%}
+{%- assign template_content_cleansed = template_content | replace: 'jQuery(document).ready(initialize);', '' -%}
+<div class="store-locator" data-module="store-locator">
+  <div class="store-locator__wrapper">
+    <h1 id="store-locator-title" style="text-align: center;">Store Locator</h1>
+    {{ template_content_cleansed }}
+  </div>
+</div>
+{%- assign template_content = nil -%}
+{%- assign template_content_cleansed = nil -%}

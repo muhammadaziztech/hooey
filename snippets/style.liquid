@@ -1,0 +1,15 @@
+<style>
+  .separator-v::before,
+  .separator-v::after,
+  .separator-left::before,
+  .separator-right::after {
+    background-image: url({{ 'separator-vertical.png' | asset_url }});
+  }
+
+  .separator-h::before,
+  .separator-h::after,
+  .separator-top::before,
+  .separator-bottom::after {
+    background-image: url({{ 'separator-horizontal.png' | asset_url }});
+  }
+</style>

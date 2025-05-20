@@ -1,0 +1,45 @@
+{%- assign mod_enabled = mod_settings.enabled -%}
+{%- assign mod_image = mod_settings.image -%}
+{%- assign mod_heading = mod_settings.heading -%}
+{%- assign mod_subheading = mod_settings.subheading -%}
+{%- assign mod_description = mod_settings.description -%}
+
+{%- if mod_enabled -%}
+  <section class="product-hat-brand">
+    <div class="product-hat-brand__image">
+      {%- if mod_image -%}
+        {%- assign mod_image_src = mod_image | img_url: 'master' -%}
+
+        {%- render 'image',
+          class: "product-hat-brand__img",
+          src: mod_image_src,
+          object_fit: 'cover',
+          loader: false
+        -%}
+
+        {%- assign mod_image_src = nil -%}
+      {%- endif -%}
+    </div>
+    <div class="product-hat-brand__content-wrapper">
+      <div class="product-hat-brand__content">
+        {%- if mod_subheading -%}
+          <div class="product-hat-brand__subheading">
+            {{- mod_subheading -}}
+          </div>
+        {%- endif -%}
+
+        {%- if mod_heading -%}
+          <h2 class="product-hat-brand__heading">
+            {{- mod_heading -}}
+          </h2>
+        {%- endif -%}
+
+        {%- if mod_description -%}
+          <div class="product-hat-brand__description">
+            {{- mod_description -}}
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  </section>
+{%- endif -%}

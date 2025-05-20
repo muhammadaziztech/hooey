@@ -1,0 +1,353 @@
+{%- capture avada-seo-original -%}
+<!doctype html>
+
+<html class="no-js" lang="{{ shop.locale }}">
+  <head>
+  {% include 'yotpo-subs-script-loader' %}
+
+  <!-- Google Tag Manager -->
+<script>
+window.dataLayer = window.dataLayer || [];
+</script>
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-T8MZ3FD');</script>
+<!-- End Google Tag Manager -->
+  {% include 'bss-product-labels-configs' %}
+	<!-- Added by AVADA SEO Suite -->
+	{% include 'avada-seo' %}
+	<!-- /Added by AVADA SEO Suite -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, height=device-height, minimum-scale=1.0, user-scalable=0">
+    <meta name="theme-color" content="{{ settings.accent_color }}">
+    <meta name="p:domain_verify" content="e76dfcabc32530bc9ba6ef8ffa9c41dd"/>
+    <meta name="facebook-domain-verification" content="jq46b3gfuqrls4l1aso2f2xlve9rya" />
+    <meta name="facebook-domain-verification" content="hp2tixajdpl43o70ytge37a68yrmzt" />
+    <meta name="facebook-domain-verification" content="firdn2bi6a833r1p3uev1ltvba1jqu" />
+    
+    <title>
+      {{ page_title }}{% if current_tags %}{% assign meta_tags = current_tags | join: ', ' %} &ndash; {{ 'general.meta.tags' | t: tags: meta_tags }}{% endif %}{% if current_page != 1 %} &ndash; {{ 'general.meta.page' | t: page: current_page }}{% endif %}{% unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless %}
+    </title>
+
+    {%- if page_description -%}
+    <meta name="description" content="{{ page_description | escape }}">
+    {%- endif -%}
+
+    <link rel="canonical" href="{{ canonical_url }}">
+
+    {%- if settings.favicon -%}
+    <link rel="shortcut icon" href="{{ settings.favicon | img_url: '32x32' }}" type="image/png">
+    {%- else -%}
+      {%- include 'favicon' -%}
+    {%- endif -%}
+
+    {% include 'social-meta-tags' %}
+
+{% if template contains 'product' %}
+{% assign productTags = product.tags | join: ', ' %}
+{% if productTags contains 'no_purchase' %}
+<noscript class="productInfo" data-tag="{{productTags}}"></noscript>
+<style>
+.ProductForm{display:none !important;}
+</style>  
+{% endif %}
+{% endif %}
+  
+    {% render 'treedify' %}{{ content_for_header }}
+
+    {% include 'fonts' %}
+    <link rel="stylesheet" href="{{ 'theme.scss.css' | asset_url }}">
+
+    <script>
+      var SHOPIFY_CDN = "{{ 'test.jpg' | asset_url }}".replace(/test.jpg\?\d*/,'');
+
+      // This allows to expose several variables to the global scope, to be used in scripts
+      window.theme = {
+        template: {{ template.name | json }},
+        localeRootUrl: {% if request.locale.primary %}''{% else %}{{ request.locale.root_url | json }}{% endif %},
+        shopCurrency: {{ shop.currency | json }},
+        moneyFormat: {{ shop.money_format | json }},
+        moneyWithCurrencyFormat: {{ shop.money_with_currency_format | json }},
+        useNativeMultiCurrency: {% if shop.enabled_currencies.size > 1 %}true{% else %}false{% endif %},
+        currencyConversionEnabled: {% if shop.enabled_currencies.size > 1 %}false{% else %}{{ settings.currency_conversion_enabled | json }}{% endif %},
+        currencyConversionMoneyFormat: {{ settings.currency_conversion_money_format | json }},
+        currencyConversionRoundAmounts: {{ settings.currency_conversion_round_amounts | json }},
+        productImageSize: {{ settings.product_image_size | json }},
+        searchMode: {{ settings.search_mode | json }},
+        showPageTransition: {{ settings.show_page_transition | json }},
+        showElementStaggering: {{ settings.show_element_staggering | json }},
+        showImageZooming: {{ settings.show_image_zooming | json }}
+      };
+
+      window.languages = {
+        cartAddNote: {{ 'cart.general.add_note' | t | json }},
+        cartEditNote: {{ 'cart.general.edit_note' | t | json }},
+        productImageLoadingError: {{ 'product.slideshow.image_loading_error' | t | json }},
+        productFormAddToCart: {% if product.template_suffix == 'pre-order' %}{{ 'product.form.pre_order' | t | json }}{% else %}{{ 'product.form.add_to_cart' | t | json }}{% endif %},
+        productFormUnavailable: {{ 'product.form.unavailable' | t | json }},
+        productFormSoldOut: {{ 'product.form.sold_out' | t | json }},
+        shippingEstimatorOneResult: {{ 'cart.shipping_estimator.one_result_title' | t | json }},
+        shippingEstimatorMoreResults: {{ 'cart.shipping_estimator.more_results_title' | t | json }},
+        shippingEstimatorNoResults: {{ 'cart.shipping_estimator.no_results_title' | t | json }}
+      };
+
+      window.lazySizesConfig = {
+        loadHidden: false,
+        hFac: 0.5,
+        expFactor: 2,
+        ricTimeout: 150,
+        lazyClass: 'Image--lazyLoad',
+        loadingClass: 'Image--lazyLoading',
+        loadedClass: 'Image--lazyLoaded'
+      };
+
+      document.documentElement.className = document.documentElement.className.replace('no-js', 'js');
+      document.documentElement.style.setProperty('--window-height', window.innerHeight + 'px');
+
+      // We do a quick detection of some features (we could use Modernizr but for so little...)
+      (function() {
+        document.documentElement.className += ((window.CSS && window.CSS.supports('(position: sticky) or (position: -webkit-sticky)')) ? ' supports-sticky' : ' no-supports-sticky');
+        document.documentElement.className += (window.matchMedia('(-moz-touch-enabled: 1), (hover: none)')).matches ? ' no-supports-hover' : ' supports-hover';
+      }());
+
+      // This code is done to force reload the page when the back button is hit (which allows to fix stale data on cart, for instance)
+      if (performance.navigation.type === 2) {
+        location.reload(true);
+      }
+    </script>
+
+  <script src="{{ 'lazysizes.min.aio.min.js' | asset_url }}" async></script>
+
+  {% if settings.currency_conversion_enabled %}
+    <script src="//cdn.shopify.com/s/javascripts/currencies.js" defer></script>
+  {% endif %}
+
+  {%- if template == 'customers/addresses' -%}
+    <script src="{{ 'shopify_common.js' | shopify_asset_url }}" defer></script>
+    <script src="{{ 'customer_area.js' | shopify_asset_url }}" defer></script>
+  {%- endif -%}
+
+  <script src="https://cdn.polyfill.io/v3/polyfill.min.js?unknown=polyfill&features=fetch,Element.prototype.closest,Element.prototype.remove,Element.prototype.classList,Array.prototype.includes,Array.prototype.fill,Object.assign,CustomEvent,IntersectionObserver,IntersectionObserverEntry,URL" defer></script>
+  <script src="{{ 'libs.min.aio.min.js' | asset_url }}" defer></script>
+  <script src="{{ 'theme.min.aio.min.js' | asset_url }}" defer></script>
+
+  {%- if settings.is_dev_mode -%}
+    {{- '/dev/main.js' | script_tag -}}
+  {%- else -%}
+    {{- 'main.min.aio.min.css' | asset_url | stylesheet_tag -}}
+    {{- 'custom.aio.min.css' | asset_url | stylesheet_tag -}}
+  {%- endif -%}
+  {%- include 'style' -%}
+
+  {% include 'microdata-schema' %}
+
+<!--begin-boost-pfs-filter-css-->
+  {% include 'boost-pfs-style' %}
+<!--end-boost-pfs-filter-css-->
+  
+<!-- Yotpo JavaScript -->
+<script type="text/javascript">
+(function e(){var e=document.createElement("script");e.type="text/javascript",e.async=true,e.src="//staticw2.yotpo.com/iEnK7mHohjTmSxOQh6FmW6FCXQvPPNCXjyjtNkek/widget.js";var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(e,t)})();
+</script> 
+<!-- End of Yotpo JavaScript -->
+    <style>
+      .modal-title{text-transform:uppercase;}
+    </style>
+    
+
+                  
+                    
+{% include 'yotpo-subs-script-loader' %}
+{% include 'yotpo-widgets-loader-script' %}
+
+<!-- Hotjar Tracking Code for Hooey -->
+<script>
+    (function(h,o,t,j,a,r){
+        h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+        h._hjSettings={hjid:2628269,hjsv:6};
+        a=o.getElementsByTagName('head')[0];
+        r=o.createElement('script');r.async=1;
+        r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+        a.appendChild(r);
+    })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+</script>
+    
+</head>
+             
+
+<body class="prestige--v4 {% if template.directory %}template-{{ template.directory | handle }}{% endif %} template-{{ template.name | handle }}{% if request.path contains 'store-locator' %} template-store-locator{% endif%}">
+  	<a class="PageSkipLink u-visually-hidden" href="#main">{{ 'header.navigation.skip_to_content' | t }}</a>
+    <span class="LoadingBar"></span>
+    <div class="PageOverlay"></div>
+    <div class="PageTransition"></div>
+
+    {% section 'popup' %}
+    {% section 'sidebar-menu' %}
+
+    {%- if template != 'cart' -%}
+      {% include 'cart-drawer' %}
+    {%- endif -%}
+
+    <div class="PageContainer">
+      {% section 'announcement' %}
+      {% section 'header' %}
+
+      <main id="main" role="main">
+        {%- if request.path contains 'store-locator'- %}
+          {% include 'store-locator' %}
+        {%- else -%}
+          {{ content_for_layout }}<!-- End of layout -->
+	<noscript class="endOfLayoutContentX" type="text/mark"></noscript>{% render 'treedify_script' %}
+        {%- endif -%}
+      </main>
+
+      {% section 'footer' %}
+
+    
+    </div>
+
+    {%- unless settings.is_dev_mode -%}
+      {{- 'main.aio.min.js' | asset_url | script_tag -}}
+    {%- endunless -%}
+    
+<!--add-to-cart-button-fix-12-19-22-->
+  
+  {% render 'spurit_po2_theme_snippet' %}
+
+<!--begin-boost-pfs-js-->
+  {% include 'boost-pfs' %}
+<!--end-boost-pfs-js-->
+  {{ 'enilon-custom.aio.min.js' | asset_url | script_tag }}
+  
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+<script>
+  
+ //$(document).ready(function(){
+// if ($('.ProductForm__AddToCart').attr('disabled')){
+//    $("body").addClass('test');
+// }else {
+//   if($('.ProductForm__AddToCart').attr('data-action')){
+//   $("body").removeClass('test');
+//      }
+// }
+ 
+
+   // {
+   //          key: "_updateAddToCartButton",
+   //          value: function(e) {
+   //          $(document).ready(function(){
+   //           if((i.innerHTML = window.languages.productFormSoldOut) : (i.setAttribute("disabled", "disabled"))){
+   //          alert();
+   //        }
+   //        });
+   //          }
+
+    
+       // if(' i.innerHTML = window.languages.productFormSoldOut) : (i.setAttribute("disabled", "disabled")'){
+     //  $("body").addClass('test');
+     //      }
+     // else{
+     //    if('i.setAttribute("data-action", "add-to-cart")'){
+     //  $("body").removeClass('test');
+     // }
+     //   }
+ 
+   //alert(dis)
+     // if('_updateAddToCartButton'){
+     //       if($('.ProductForm__AddToCart').is('[disabled=disabled]')){
+     //         alert('not')
+     //       }  
+     //    }else{
+     //    if(('.ProductForm__AddToCart').attr('data-action')) {
+     //         alert('yes')
+     //         }
+     //    }
+  // {
+  //  key: "_updateAddToCartButton",
+  //    alert();
+    
+  
+  //    }
+
+ $(document).ready(function(){
+if ($('.ProductForm__AddToCart').attr('disabled')){
+  $("body").addClass('ProductForm__AddToCart_custom');
+      } else {
+       $("body").removeClass('ProductForm__AddToCart_custom');
+       }
+   $(document).on('click', '.Popover__ValueList .Popover__Value', function(){
+     
+     var condition = $('.ProductForm__AddToCart').attr('disabled');
+     
+     if (condition) {
+        $("body").addClass('ProductForm__AddToCart_custom');
+       
+      } else {
+       $("body").removeClass('ProductForm__AddToCart_custom');
+     }
+ });
+   });
+  
+</script>
+</body>
+
+
+
+    
+<script src="https://a.klaviyo.com/media/js/onsite/onsite.js"></script>
+<script>
+    var klaviyo = klaviyo || [];
+    klaviyo.init({
+      account: "NDuyau",
+      platform: "shopify"
+    });
+    klaviyo.enable("backinstock",{ 
+    trigger: {
+      product_page_text: "Notify Me When Available",
+      product_page_class: "btn",
+      product_page_text_align: "center",
+      product_page_margin: "0px",
+      replace_anchor: false
+    },
+    modal: {
+     headline: "<span style='text-transform:uppercase;'>{product_name}</span>",
+     body_content: "Register to receive a notification when this item comes back in stock.",
+     email_field_label: "Email",
+     button_label: "NOTIFY ME WHEN AVAILABLE",
+     subscription_success_label: "You're in! We'll let you know when it's back.",
+     footer_content: '',
+     additional_styles: "@import url('https://fonts.googleapis.com/css?family=Helvetica+Neue');",
+     drop_background_color: "#000",
+     background_color: "#fff",
+     text_color: "#222",
+     button_text_color: "#fff",
+     button_background_color: "#000000",
+     close_button_color: "#ccc",
+     error_background_color: "#fcd6d7",
+     error_text_color: "#C72E2F",
+     success_background_color: "#d3efcd",
+     success_text_color: "#1B9500"
+    }
+  });
+</script>
+{% if content_for_header contains 'product_label' %}{% include 'bss-product-label-js' %}{% include 'bss-label-style-css' %}{% include 'bss-product-label-fonts' %}{% endif %}
+  
+<script> (function(){ var s = document.createElement('script'); var h = document.querySelector('head') || document.body; s.src = 'https://acsbapp.com/apps/app/dist/js/app.js'; s.async = true; s.onload = function(){ acsbJS.init({ statementLink : '', footerHtml : ' ', hideMobile : false, hideTrigger : false, disableBgProcess : false, language : 'en', position : 'right', leadColor : '#000000', triggerColor : '#000000', triggerRadius : '50%', triggerPositionX : 'right', triggerPositionY : 'center', triggerIcon : 'people', triggerSize : 'medium', triggerOffsetX : 20, triggerOffsetY : 20, mobile : { triggerSize : 'small', triggerPositionX : 'right', triggerPositionY : 'center', triggerOffsetX : 10, triggerOffsetY : 0, triggerRadius : '50%' } }); }; h.appendChild(s); })(); </script>
+
+</html>
+
+{%- endcapture avada-seo-original -%}
+{%- capture avada-seo-minified -%}
+{%- include 'avada-seo-minifier', content: avada-seo-original -%}
+{%- endcapture -%}
+{%- if avada-seo-minified contains 'Liquid error' -%}
+{{ avada-seo-original }}
+{%- else -%}
+{{ avada-seo-minified }}
+{%- endif -%}

@@ -1,0 +1,149 @@
+{% include 'spurit_po2_section_snippet', product: null, products: collections[section.settings.collection].products %}
+<div class="tv-template" data-section-id="{{ section.id }}" data-section-type="tv-template" data-module="tv-template">
+  {%- comment -%}
+  Hero
+  {%- endcomment -%}
+  {%- assign featured_video_handle = section.settings.featured_video | default: nil -%}
+  {%- assign related_collection_handle = section.settings.collection | default: nil -%}
+  <section class="tv-hero">
+    {%- if featured_video_handle -%}
+      {%- assign featured_video = articles[featured_video_handle] -%}
+      <div class="tv-hero__image-wrapper">
+        {%- if featured_video.image -%}
+          {%- assign hero_image_src = featured_video.image | img_url: 'master' -%}
+          {%- include 'image',
+            class: 'tv-hero__image',
+            src: hero_image_src,
+            object_fit: 'cover',
+            loader: false
+          -%}
+          {%- assign hero_image_src = nil -%}
+        {%- endif -%}
+      </div>
+      <div class="tv-hero__content">
+        <div class="tv-hero__content-inner">
+          <div class="label tv-hero__subtitle">
+            {{- 'tv.featured' | t -}}
+          </div>
+          {%- if featured_video.title -%}
+            <h1 class="h1 tv-hero__title">
+              {{- featured_video.title -}}
+            </h1>
+          {%- endif -%}
+          {%- if featured_video.excerpt_or_content -%}
+            <div class="tv-hero__description">
+              {{- featured_video.excerpt_or_content -}}
+              <a href="{{- featured_video.url -}}" class="tv-hero__more-link label" aria-label="{{- 'tv.more_on' | t | append: ' ' | append: featured_video.title -}}">
+                {{- 'tv.learn_more' | t -}}
+                {%- include 'icon' with 'arrow-down' -%}
+              </a>
+            </div>
+          {%- endif -%}
+          {%- include 'tv-play-button', video: featured_video -%}
+          {%- if related_collection_handle -%}
+            {%- assign related_collection = collections[related_collection_handle] -%}
+            <a class="tv-hero__collection" href="{{- related_collection.url -}}">
+              {%- if related_collection.image -%}
+                <div class="tv-hero__collection-image-wrapper">
+                  {%- assign related_collection_image_src = related_collection.image | img_url -%}
+                  {%- include 'image',
+                    class: 'tv-hero__collection-image',
+                    src: related_collection_image_src,
+                    object_fit: 'cover',
+                    loader: false
+                  -%}
+                </div>
+              {%- endif -%}
+              <div class="tv-hero__collection-content">
+                <div class="tv-hero__collection-label label">
+                  {{- 'tv.related_collection' | t -}}
+                </div>
+                <div class="tv-hero__collection-title h4">
+                  {{- related_collection.title -}}
+                  {%- include 'icon' with 'arrow-down' -%}
+                </div>
+              </div>
+            </a>
+            {%- assign related_collection = nil -%}
+          {%- endif -%}
+        </div>
+      </div>
+      {%- assign featured_video = nil -%}
+    {%- else -%}
+      <div class="tv-hero__image-wrapper"></div>
+    {%- endif -%}
+  </section>
+  {%- comment -%}
+  Hooey TV Body
+  {%- endcomment -%}
+  <div class="tv-body">
+    <div class="tv-intro">
+      <div class="tv-intro__logo">
+        {%- include 'icon-image', icon: 'hooey-tv' -%}
+      </div>
+      <div class="tv-intro__content">
+        {{- section.settings.intro -}}
+      </div>
+    </div>
+    <div class="tv-channel">
+      {%- if section.settings.channel_url -%}
+        <a href="{{- section.settings.channel_url -}}" class="tv-chanel__link label" target="_blank">
+          {%- include 'icon' with 'tv-youtube' -%}
+          {{- 'tv.follow_channel' | t -}}
+        </a>
+      {%- endif -%}
+    </div>
+    {%- include 'tv-list', excluded_video: featured_video_handle -%}
+  </div>
+  {%- assign featured_video_handle = nil -%}
+  {%- assign related_collection_handle = nil -%}
+</div>
+
+{%- include 'tv-modal-player' -%}
+
+<style>
+  .tv-hero__subtitle::before,
+  .tv-hero__subtitle::after,
+  .tv-hero__collection::before,
+  .tv-hero__collection::after {
+    background-image: url({{ 'separator-vertical.png' | asset_url }});
+  }
+</style>
+
+{% schema %}
+{
+  "name": "TV Page",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Hero"
+    },
+    {
+      "type": "article",
+      "id": "featured_video",
+      "label": "Video to feature on TV page"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Related Collection"
+    },
+    {
+      "type": "header",
+      "content": "Other"
+    },
+    {
+      "type": "text",
+      "id": "intro",
+      "label": "Intro Text",
+      "default": "HooeyTV is a unique look at the colorful characters found on the more extreme side of the western lifestyle."
+    },
+    {
+      "type": "text",
+      "id": "channel_url",
+      "label": "Youtube Channel URL",
+      "default": "https://www.youtube.com/channel/UCif3V_BlXPbvPfxlO5Vlz4Q/"
+    }
+  ]
+}
+{% endschema %}

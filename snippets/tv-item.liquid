@@ -1,0 +1,91 @@
+{%- assign item = item | default: nil -%}
+{%- assign tv_base_url = tv_base_url | default: '/pages/hooeytv/' -%}
+{%- assign class = class | default: nil -%}
+{%- assign is_show_image = is_show_image | default: nil -%}
+{%- assign is_show_full_content = is_show_full_content | default: nil -%}
+{%- assign is_show_learn_more = is_show_learn_more | default: nil -%}
+{%- assign is_show_share = is_show_share | default: nil -%}
+
+{%- if item -%}
+  <div class="tv-item{% if class %} {{ class }}{% endif %}">
+    {%- if is_show_image -%}
+      <div class="tv-item__image-wrapper">
+        {%- if item.image -%}
+          {%- assign image_src = item.image | img_url: 'master' -%}
+          {%- include 'image',
+            class: 'tv-item__image',
+            src: image_src,
+            object_fit: 'cover',
+            loader: false
+          -%}
+          {%- assign image_src = nil -%}
+        {%- endif -%}
+        {%- include 'tv-play-button', video: item -%}
+      </div>
+    {%- endif -%}
+    <div class="tv-item__body">
+      <div class="tv-item__category">
+        {%- for tag in item.tags -%}
+          {%- if tag contains 'category:' -%}
+            {%- assign category = tag | remove: 'category:' -%}
+            {%- assign category_slug = tag | remove: 'category:' | handleize -%}
+            <a href="{{- tv_base_url -}}{{- category_slug -}}" class="tv-item__category-link label separator-v">{{- category -}}</a>
+            {%- assign category = nil -%}
+            {%- assign category_slug = nil -%}
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+      <h3 class="tv-item__title h3">
+        {{- item.title -}}
+      </h3>
+      <div class="tv-item__content">
+        {%- if is_show_full_content -%}
+          {{- item.content -}}
+        {%- else -%}
+          {{- item.excerpt_or_content -}}
+        {%- endif -%}
+        {%- if is_show_learn_more -%}
+          <a href="{{- item.url -}}" class="tv-item__content-more-link label" aria-label="{{- 'tv.more_on' | t | append: ' ' | append: item.title -}}">
+            {{- 'tv.learn_more' | t -}}
+            {%- include 'icon' with 'arrow-down' -%}
+          </a>
+        {%- endif -%}
+      </div>
+      {%- if is_show_share -%}
+        {%- assign item_url = shop.url | append: item.url -%}
+        <div class="tv-item__share label">
+          <div class="tv-item__share-title">{{- 'tv.share' | t -}}</div>
+          <ul class="tv-item__share-list">
+            <li class="tv-item__share-item">
+              <a href="https://www.facebook.com/sharer/sharer.php?u={{- item_url -}}" class="tv-item__share-link" target="_blank" rel="noopener" aria-label="{{- 'social.facebook' | t -}}">
+                {%- include 'icon' with 'facebook' -%}
+              </a>
+            </li>
+            <li class="tv-item__share-item">
+              <a href="https://twitter.com/intent/tweet?url={{- item_url -}}" class="tv-item__share-link" target="_blank" rel="noopener" aria-label="{{- 'social.twitter' | t -}}">
+                {%- include 'icon' with 'twitter' -%}
+              </a>
+            </li>
+            <li class="tv-item__share-item">
+              <a href="https://pinterest.com/pin/create/button/?url={{- item_url -}}" class="tv-item__share-link" target="_blank" rel="noopener" aria-label="{{- 'social.pinterest' | t -}}">
+                {%- include 'icon' with 'pinterest' -%}
+              </a>
+            </li>
+            <li class="tv-item__share-item">
+              <a href="mailto:?body={{- item_url -}}" class="tv-item__share-link" aria-label="{{- 'social.email' | t -}}">
+                {%- include 'icon' with 'envelope' -%}
+              </a>
+            </li>
+          </ul>
+        </div>
+        {%- assign item_url = nil -%}
+      {%- endif -%}
+    </div>
+  </div>
+{%- endif -%}
+
+{%- assign tv_base_url = nil -%}
+{%- assign class = nil -%}
+{%- assign is_show_image = nil -%}
+{%- assign is_show_learn_more = nil -%}
+{%- assign is_show_share = nil -%}

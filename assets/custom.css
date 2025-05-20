@@ -1,0 +1,83 @@
+
+
+.hidden-title {
+  padding-bottom: 17px!important;
+}
+
+.klaviyo-bis-trigger {
+  display:inline-block;
+  padding:10px 15px;
+  text-transform:uppercase;
+  border:2px solid #000000;
+  background-color:#ffffff;
+  width:fit-content;
+}
+.klaviyo-bis-trigger:hover {
+  background-color: #000000;
+  color: #ffffff;
+}
+.ProductForm {
+  text-align:right;
+}
+.klaviyo-bis-modal h3.modal-title {
+  text-transform:uppercase;
+}
+.hooey-dropdown select{
+  width: 25%;
+  display: none
+}
+
+.hooey-dropdown svg {
+  display: none;
+}
+
+.ProductForm__Option--labelled {
+  text-align:left;
+}
+.hooey-dropdown select {
+  width:100%;
+}
+.hooey-dropdown {
+  width:100%;
+}
+.Popover {
+  z-index: 10;
+}
+
+.ProductForm__Variants.size-chart-edts {
+    margin-bottom: 20px;
+    position: relative;
+}
+.size-chart-edts button.ProductForm__LabelLink.Link {
+    position: absolute;
+    right: 0;
+    top: -35px;
+}
+
+@media only screen and (min-width: 768px) {
+  
+  
+
+  .exp-two-column {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3em;
+  }
+  
+  
+}
+
+h3.crosssell-title {
+    margin: 25px 0;
+    text-align: center;
+    font-family: oswald !important;
+    text-transform: uppercase !important;
+    font-size: x-large !important;
+}
+
+.bss_pl_img .bss_pl_label_text.bss-pl-frontend {
+    z-index: 3 !important;
+}
+
+
+

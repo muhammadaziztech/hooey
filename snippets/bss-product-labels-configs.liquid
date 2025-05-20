@@ -1,0 +1,70 @@
+{{ 'bss-file-configdata.js' | asset_url | script_tag }} {{ 'bss-file-configdata-banner.js' | asset_url | script_tag}} {{ 'bss-file-configdata-popup.js' | asset_url | script_tag}}<script>
+                if (typeof BSS_PL == 'undefined') {
+                    var BSS_PL = {};
+                }
+                var bssPlApiServer = "https://product-labels-pro.bsscommerce.com";
+                BSS_PL.customerTags = {% if customer %}'{%for tag in customer.tags%}{{ tag }},{% endfor %}'{% else %}'null'{% endif %};
+                BSS_PL.customerId = {% if customer %}'{{customer.id}}'{% else %}'null'{% endif %};
+                BSS_PL.configData = configDatas;
+                BSS_PL.configDataBanner = configDataBanners ? configDataBanners : [];
+                BSS_PL.configDataPopup = configDataPopups ? configDataPopups : [];
+                BSS_PL.storeId = 23959;
+                BSS_PL.currentPlan = "ten_usd";
+                BSS_PL.storeIdCustomOld = "10678";
+                BSS_PL.storeIdOldWIthPriority = "12200";
+                BSS_PL.apiServerProduction = "https://product-labels-pro.bsscommerce.com";
+                
+                BSS_PL.integration = {"laiReview":{"status":0,"config":[]}}
+                BSS_PL.settingsData = {}
+                </script>
+            <style>
+.homepage-slideshow .slick-slide .bss_pl_img {
+    visibility: hidden !important;
+}
+</style>
+<script>
+function bssFixSupportReInitLabel($, BSS_PL, checkPageFly, initCollectionLabel, initBadge) {
+    if(window.location.pathname.includes('/collections')) {
+      const targetNode = document.querySelector('.ProductListWrapper');
+      const config = { childList: true , subtree: true };
+      const callback = (mutationList) => {
+        for (const mutation of mutationList) {
+          if (mutation.type === 'childList') {
+              BSS_PL.firstLoad = true;
+              BSS_PL.init();
+              initCollectionLabel($, BSS_PL);
+          }
+        }
+      };
+      if(targetNode) {
+        const observer = new MutationObserver(callback);
+        observer.observe(targetNode, config);
+      }
+    }
+    return {  checkPageFly };
+}
+</script>
+<script>
+function bssFixSupportAppendHtmlLabel($, BSS_PL, parent, page, htmlLabel) {
+  let appended = false;
+  if(page=='products' && $(parent).hasClass('AspectRatio--withFallback')) {
+    $(parent).append(htmlLabel);
+    appended = true;
+  }
+  if($(parent).hasClass('CartItem__Title')  && $(parent).closest('.CartItem').find('.AspectRatio').length) {
+    const prt = $(parent).closest('.CartItem').find('.AspectRatio')[0];
+    $(prt).append(htmlLabel);
+    appended = true;
+  }
+  
+  return appended;
+}
+</script>
+<script>
+function bssFixSupportElementImage($, img, parent, page) {
+  if($(parent).hasClass('ProductItem__Wrapper')) {
+    img = $(parent).find('.AspectRatio .ProductItem__Image');   
+  }
+  return img;
+}
+</script>
